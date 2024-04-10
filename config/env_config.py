@@ -36,5 +36,6 @@ class GCBMujocoConfig(Config):
         "num_successes_to_increment": 10,
         "intensity_increment": 0.01,
         "step_size": 1,
-        "max_episode_length": 1000
+        "max_episode_length": 1000,
+        "include_env_in_state": False
     }

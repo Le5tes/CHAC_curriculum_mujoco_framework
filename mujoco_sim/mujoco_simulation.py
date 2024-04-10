@@ -11,7 +11,7 @@ if viewer_installed:
 
 
 class MJSimulation:
-    def __init__(self, robot, render = False):
+    def __init__(self, robot, render = False, include_env_in_state = False):
         if robot == 'ant':
             xml_file_name = "ant-environment.xml"
         else:
@@ -35,6 +35,7 @@ class MJSimulation:
                 print("viewer not installed")
         self.viewer = None
         self.render = False
+        self.include_env_in_state = include_env_in_state
 
     def reset(self, intensity = 0.00):
         # print("steps taken", self.step_ctr)
@@ -75,7 +76,12 @@ class MJSimulation:
             mujoco.mjr_uploadHField(self.model, self.viewer.ctx, self.model.hfield_adr)
     
     def state(self):
-        return np.concatenate((self.data.qpos.copy(),self.data.qvel.copy()))
+        state_parts = [self.data.qpos.copy(),self.data.qvel.copy()]
+
+        if self.include_env_in_state:
+            state_parts.append(self.heightmap)
+        
+        return np.concatenate(state_parts)
     
     def generate_start_and_goal(self, intensity):
 

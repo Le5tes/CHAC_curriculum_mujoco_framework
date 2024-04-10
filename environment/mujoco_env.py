@@ -5,10 +5,10 @@ import numpy as np
 class MujocoEnvironment:
     def __init__(self, robot, config, logger):
         self.config = config
-        self.env = MJSimulation(robot.name, config.render)
+        self.env = MJSimulation(robot.name, config.render, config.include_env_in_state)
         self.robot = robot
         self.action_bounds = robot.joints_scale
-        self.state_bounds = self.get_state_bounds(robot)
+        self.state_bounds = self.get_state_bounds(robot, config.include_env_in_state)
         self.intensity = 0.0
         self.successes = deque([], self.config.num_successes_to_increment)
         self.step_ctr = 0
@@ -61,7 +61,7 @@ class MujocoEnvironment:
     def update_successes(self,success):
         self.successes.append(success)
 
-    def get_state_bounds(self, robot):
+    def get_state_bounds(self, robot, include_env_in_state):
         arena_size_bound = (-self.config.arena_size, self.config.arena_size)
         area_bounds = np.array([arena_size_bound, arena_size_bound, arena_size_bound])
 
@@ -71,7 +71,13 @@ class MujocoEnvironment:
 
         joint_bounds = np.concatenate([np.array([joint.move_range, (-joint.max_velocity, joint.max_velocity)]) for joint in robot.joints]) # mujoco doesn't return joint effort
 
-        return np.concatenate((area_bounds, orientation_bounds, velocity_bounds, joint_bounds))
+        state_bounds_parts = [area_bounds, orientation_bounds, velocity_bounds, joint_bounds]
+
+        if include_env_in_state:
+            terrain_bounds = np.array([(-10, 10) for _ in range(21 * 21)])
+            state_bounds_parts.append(terrain_bounds)
+
+        return np.concatenate(state_bounds_parts)
     
     def assemble_obs(self, observation):
         return {

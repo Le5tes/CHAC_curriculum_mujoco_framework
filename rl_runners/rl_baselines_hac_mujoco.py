@@ -9,8 +9,8 @@ import os
 import numpy as np
 from robot.ant_robot import AntSmallF
 
-num_epochs = 1
-# num_epochs = 1000
+# num_epochs = 1
+num_epochs = 1000
 
 def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_train_batches, policy_save_interval, save_policies, savepath):
     latest_policy_path = os.path.join(savepath, 'policy_latest.pkl')
@@ -81,7 +81,7 @@ def run_hac(savepath, time_horizon = 27, max_ep_length=700, step_size=15):
 
     env_config = GCBMujocoConfig({
         "dims":{
-            'o': robot.get_state_length(),
+            'o': robot.get_state_length() + 21*21,
             'u': len(robot.joints),
             'g': 2,
         },
@@ -93,6 +93,7 @@ def run_hac(savepath, time_horizon = 27, max_ep_length=700, step_size=15):
         "step_size": step_size,
         "increasing_difficulty": True,
         "max_episode_length": max_ep_length,
+        "include_env_in_state": True
     })
 
     params = config.DEFAULT_PARAMS
