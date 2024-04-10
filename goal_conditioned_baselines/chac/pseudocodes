@@ -1,0 +1,34 @@
+my design
+
+call step on env
+=> env calls policy to get action
+=> env calls step on alg with action and new state
+
+
+
+
+current
+
+call train on highest level
+
+once all levels trained call learn
+
+repeat
+
+
+
+train:
+  initialise stuff,
+
+  then while true:
+  select action
+
+  if lowest level 
+  - call to env to moce to next state and update current state
+  - check goals
+  else 
+  - propose lower level subgoals
+  - call train on lower level
+
+  makes transitions
+  return to higher level if finished training that level
