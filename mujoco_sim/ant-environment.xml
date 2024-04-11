@@ -85,11 +85,15 @@
       <geom type="box" size="20.25 0.25 15" contype="1" conaffinity="1" rgba="0.4 0.4 0.4 1" />
     </body>
 
+
     <!-- Create goal and subgoal visualizations -->
     <body name="goal" pos="0 0 -7.5" mocap="true">
 				<site type="cylinder" size="0.5 15" rgba="1 1 0 0.3" />
 		</body>
 
+    <body name="start" pos="0 0 -7.5" mocap="true">
+			<site type="cylinder" size="0.5 15" rgba="0 0 1 0.3" />
+		</body>
     <!-- <body name="subgoal_0" pos="0 0 0.4" mocap="true">
 				<site type="cylinder" size="0.5" rgba="1 0 1 0" />
 		</body>

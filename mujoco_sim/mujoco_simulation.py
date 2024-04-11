@@ -54,6 +54,7 @@ class MJSimulation:
 
         self.data.qpos[:2] = self.start_pos
         self.data.mocap_pos[0][:2] = self.goal
+        self.data.mocap_pos[1][:2] = self.start_pos
         return self.state()
 
     def step(self, action):
