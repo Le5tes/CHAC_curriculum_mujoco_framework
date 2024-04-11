@@ -1,3 +1,4 @@
+import json
 from environment.GCB_wrapper import GCB_Wrapper, env_factory
 from config.env_config import DebugLogsConfig, GCBMujocoConfig
 from environment.mujoco_env import MujocoEnvironment
@@ -9,7 +10,7 @@ import os
 import numpy as np
 from robot.ant_robot import AntSmallF
 
-# num_epochs = 1
+# num_epochs = 3
 num_epochs = 1000
 
 def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_train_batches, policy_save_interval, save_policies, savepath):
@@ -20,6 +21,7 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
     best_success_rate = -np.inf
 
     success_rates = []
+    ending_intensities = []
 
     for epoch in range(n_epochs):
         # train
@@ -46,6 +48,7 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
 
         success_rate = evaluator.current_success_rate()
         success_rates.append(success_rate)
+        ending_intensities.append(evaluator.env.wrapped_env.intensity)
 
         try:
             rollout_worker.policy.draw_hists(img_dir=logger.get_dir())
@@ -71,6 +74,8 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
         
         if (epoch + 1) == n_epochs:
             logger.info('All epochs are finished. Stopping the training now.')
+            with open(savepath + "results.json", "w") as file:
+                      file.write(json.dumps({"successes":success_rates, "ending_intensities":ending_intensities}))
             break
 
 def make_env(robot, env_config):
