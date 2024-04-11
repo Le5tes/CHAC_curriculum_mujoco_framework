@@ -27,6 +27,7 @@ class RolloutWorker(Rollout):
             ro_start = time.time()
             success, self.eval_data, train_duration = self.policy.train(self.env, episode, self.eval_data, n_train_batches, epoch_num)
             dur_train += train_duration
+            self.env.wrapped_env.update_successes(success)
             self.success_history.append(1.0 if success else 0.0)
             self.n_episodes += 1
             dur_ro += time.time() - ro_start - train_duration
