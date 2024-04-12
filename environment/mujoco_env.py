@@ -9,7 +9,7 @@ class MujocoEnvironment:
         self.robot = robot
         self.action_bounds = robot.joints_scale
         self.state_bounds = self.get_state_bounds(robot, config.include_env_in_state)
-        self.intensity = 0.0
+        self.intensity = self.config.start_intensity
         self.successes = deque([], self.config.num_successes_to_increment)
         self.step_ctr = 0
         self.logger = logger
