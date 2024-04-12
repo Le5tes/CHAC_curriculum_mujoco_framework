@@ -27,9 +27,11 @@ def run_test_hac_ant_mujoco(load_path, time_horizon = 27, max_ep_length=700, ste
         "time_scales": f"{time_horizon},{time_horizon}",
         "bounded_terrain": True,
         "fall_on_turn_over": False,
-        "render": False,
+        "render": True,
         "step_size": step_size,
         "increasing_difficulty": True,
+        "start_intensity": 0.0,
+        "include_larger_features": True,
         "num_successes_to_increment": 1,
         "max_episode_length": max_ep_length
     })

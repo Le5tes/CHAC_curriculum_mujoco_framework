@@ -84,7 +84,7 @@ def make_env(robot, env_config):
 def run_hac(savepath, time_horizon = 27, max_ep_length=700, step_size=15):
     robot = AntSmallF
 
-    include_env_in_state = False
+    include_env_in_state = True
 
     env_config = GCBMujocoConfig({
         "dims":{
@@ -100,7 +100,8 @@ def run_hac(savepath, time_horizon = 27, max_ep_length=700, step_size=15):
         "step_size": step_size,
         "increasing_difficulty": True,
         "max_episode_length": max_ep_length,
-        "include_env_in_state": include_env_in_state
+        "include_env_in_state": include_env_in_state,
+        "include_larger_features": include_env_in_state
     })
 
     params = config.DEFAULT_PARAMS
