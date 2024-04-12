@@ -9,9 +9,10 @@ viewer_installed = False
 if viewer_installed:
     from mujoco_viewer import MujocoViewer
 
+heightmap_adjustment_factor = 0.1
 
 class MJSimulation:
-    def __init__(self, robot, render = False, include_env_in_state = False):
+    def __init__(self, robot, render = False, include_env_in_state = False, include_larger_features = False):
         if robot == 'ant':
             xml_file_name = "ant-environment.xml"
         else:
@@ -26,26 +27,31 @@ class MJSimulation:
         self.action_shape = self.data.ctrl.shape
         
         self.step_ctr = 0
-        if render:
-            if viewer_installed:
-                self.render = render
-                self.viewer = MujocoViewer(self.model, self.data)
-                return
-            else:
-                print("viewer not installed")
+
+        self.prepare_viewer(render)
+
+        self.include_env_in_state = include_env_in_state
+        self.include_larger_features = include_larger_features
+
+    def prepare_viewer(self, render):
         self.viewer = None
         self.render = False
-        self.include_env_in_state = include_env_in_state
+        if render:
+            if viewer_installed:
+                self.render = True
+                self.viewer = MujocoViewer(self.model, self.data)
+            else:
+                print("viewer not installed")
+
 
     def reset(self, intensity = 0.00):
         # print("steps taken", self.step_ctr)
 
         if self.render and self.viewer is None:
             self.viewer = MujocoViewer(self.model, self.data)
-        else:
-            if self.viewer:
-                self.viewer.close()
-                self.viewer = None
+        elif not self.render and self.viewer:
+            self.viewer.close()
+            self.viewer = None
 
         self.step_ctr = 0
         self.choose_heightmap(intensity)
@@ -70,7 +76,9 @@ class MJSimulation:
 
     def choose_heightmap(self, intensity):
         self.generate_start_and_goal(intensity)
-        self.heightmap = hms.jagged_terrain(20,max(intensity - 0.1, 0), self.start_pos, self.goal).ravel() 
+        self.heightmap = (
+            hms.choose_terrain if self.include_larger_features else hms.jagged_terrain
+        )(20,max(intensity - 0.1, 0), self.start_pos/2 + 10, self.goal/ 2 + 10).T.ravel() * heightmap_adjustment_factor
 
         self.model.hfield_data = self.heightmap
         if self.render:

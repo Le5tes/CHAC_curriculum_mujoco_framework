@@ -4,6 +4,7 @@ from config.env_config import DebugLogsConfig, GCBMujocoConfig
 from environment.mujoco_env import MujocoEnvironment
 from goal_conditioned_baselines import logger
 from goal_conditioned_baselines.chac import config
+from goal_conditioned_baselines.chac.chac_policy import set_env_to_load
 from goal_conditioned_baselines.chac.rollout import RolloutWorker
 
 from robot.ant_robot import AntSmallF
@@ -48,6 +49,7 @@ def run_test_hac_ant_mujoco(load_path, time_horizon = 27, max_ep_length=700, ste
         return env
 
     params['make_env'] = make_env
+    set_env_to_load(env)
 
     eval_params = config.EVAL_PARAMS
 
@@ -61,7 +63,7 @@ def run_test_hac_ant_mujoco(load_path, time_horizon = 27, max_ep_length=700, ste
         policy = pickle.load(policy_file)
 
 
-    evaluator = RolloutWorker(params['make_env'], policy,  env_config.dims, logger, render = True, **eval_params)
+    evaluator = RolloutWorker(params['make_env'], policy,  env_config.dims, logger, render = False, **eval_params)
     for _ in range(num_episodes):
         evaluator.generate_rollouts()
         env.wrapped_env.update_successes(bool(evaluator.success_history[-1]))

@@ -16,7 +16,7 @@ class GCBMujocoConfig(Config):
             'u': 8,
             'g': 27,
         },
-        "start_intensity": 0.01,
+        "start_intensity": 0.0,
         "rate": 500,
         "record_path": "",
         "debug_logs": DebugLogsConfig(),
@@ -37,5 +37,6 @@ class GCBMujocoConfig(Config):
         "intensity_increment": 0.01,
         "step_size": 1,
         "max_episode_length": 1000,
+        "include_larger_features": False,
         "include_env_in_state": False
     }

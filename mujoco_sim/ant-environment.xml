@@ -2,7 +2,7 @@
   <compiler angle="degree" coordinate="local" inertiafromgeom="true"/>
   <option integrator="RK4" timestep="0.02"/>
   <asset>
-    <hfield name="heightmap" nrow="21" ncol="21" size="20 20 15 10"/>
+    <hfield name="heightmap" nrow="21" ncol="21" size="20 20 15 20"/>
   </asset>
 
   <custom>
