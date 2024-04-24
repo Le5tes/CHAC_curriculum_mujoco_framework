@@ -5,8 +5,8 @@ class ExperienceBuffer:
     def __init__(self, max_buffer_size, batch_size, state_dim, action_dim, goal_dim):
         self.max_buffer_size = max_buffer_size
         self.batch_size = batch_size
-        self.device = torch.device("cpu")
-        # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # self.device = torch.device("cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self._states = torch.empty((self.max_buffer_size, state_dim), dtype=torch.float32)
         self._actions = torch.empty((self.max_buffer_size, action_dim), dtype=torch.float32)

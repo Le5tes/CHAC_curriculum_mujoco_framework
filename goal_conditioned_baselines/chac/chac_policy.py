@@ -18,16 +18,16 @@ class CHACPolicy(Policy):
         Policy.__init__(self, input_dims, T, rollout_batch_size, **kwargs)
         
         # TODO: torch.cuda.is_available() returning true on laptop where cuda is not available - gives segfault!
-        # if torch.cuda.is_available():
-        #     print('cuda +')
-        #     self.device = torch.device('cuda')
-        #     logger.info('Running on GPU: {} {}'.format(torch.cuda.current_device(),
-        #           torch.cuda.get_device_name(torch.cuda.current_device())))
-        # else:
-        #     print('cuda -')
-        #     self.device = torch.device('cpu')
-        #     logger.info('Running on CPU ...')
-        self.device = torch.device("cpu")
+        if torch.cuda.is_available():
+            print('cuda +')
+            self.device = torch.device('cuda')
+            logger.info('Running on GPU: {} {}'.format(torch.cuda.current_device(),
+                  torch.cuda.get_device_name(torch.cuda.current_device())))
+        else:
+            print('cuda -')
+            self.device = torch.device('cpu')
+            logger.info('Running on CPU ...')
+        # self.device = torch.device("cpu")
         self.verbose = verbose
         self.n_levels = agent_params['n_levels']
         self.pre_episodes = agent_params['n_pre_episodes']
