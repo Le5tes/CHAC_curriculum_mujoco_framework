@@ -18,7 +18,7 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
     best_policy_path = os.path.join(savepath, 'policy_best.pkl')
     periodic_policy_path = os.path.join(savepath, 'policy_{}.pkl')
 
-    best_success_rate = -np.inf
+    best_achievement = -np.inf
 
     success_rates = []
     ending_intensities = []
@@ -48,7 +48,9 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
 
         success_rate = evaluator.current_success_rate()
         success_rates.append(success_rate)
-        ending_intensities.append(evaluator.env.wrapped_env.intensity)
+        end_intensity = evaluator.env.wrapped_env.intensity
+        ending_intensities.append(end_intensity)
+        achievement = success_rate * end_intensity
 
         try:
             rollout_worker.policy.draw_hists(img_dir=logger.get_dir())
@@ -66,10 +68,10 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
             logger.info('Saving periodic policy to {} ...'.format(policy_path))
             evaluator.save_policy(policy_path)
         
-        if success_rate >= best_success_rate and save_policies:
-            best_success_rate = success_rate
+        if achievement >= best_achievement and save_policies:
+            best_achievement = achievement
             logger.info(
-                'New best success rate: {}. Saving policy to {} ...'.format(best_success_rate, best_policy_path))
+                'New best acheivement: {}. Saving policy to {} ...'.format(best_achievement, best_policy_path))
             evaluator.save_policy(best_policy_path)
         
         if (epoch + 1) == n_epochs:
@@ -110,6 +112,9 @@ def run_hac(savepath, time_horizon = 27, max_ep_length=700, step_size=15):
     params['gamma'] = 1.0 - 1.0/params['T']
     params['chac_params'] = dict()
     params['env_name']="AntMujoco"
+    params['fw_hidden_size'] = '256,256,256'
+    params['q_hidden_size'] = 256
+    params['mu_hidden_size'] = 256
 
     env = make_env(robot, env_config)
     def get_env():
