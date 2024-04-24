@@ -9,6 +9,7 @@ from goal_conditioned_baselines.chac.rollout import RolloutWorker
 import os
 import numpy as np
 from robot.ant_robot import AntSmallF
+from pathlib import Path
 
 
 def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_train_batches, policy_save_interval, save_policies, savepath):
@@ -82,6 +83,9 @@ def make_env(robot, env_config):
     return GCB_Wrapper(MujocoEnvironment(robot, env_config, logger), env_config)
 
 def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = 27, max_ep_length=700, step_size=15):
+    # Make sure the savepath directory exists and make it if not! 
+    Path(savepath).mkdir(parents=True, exist_ok=True)
+
     robot = AntSmallF
 
     include_env_in_state = False
