@@ -5,7 +5,7 @@ import numpy as np
 import os
 import sys
 # viewer_installed = 'mujoco_viewer' in sys.modules
-viewer_installed = False
+viewer_installed = True
 if viewer_installed:
     from mujoco_viewer import MujocoViewer
 
@@ -94,7 +94,7 @@ class MJSimulation:
     
     def generate_start_and_goal(self, intensity):
 
-        # intensity 0 - 0.09 => distance between 1 and 10
+        # intensity 0 - 0.009 => distance between 1 and 10
         intensity_distance = min(1 + 100 * intensity, 10)
         minval = -intensity_distance
         maxval = intensity_distance

@@ -6,10 +6,13 @@ from goal_conditioned_baselines import logger
 from goal_conditioned_baselines.chac.chac_policy import CHACPolicy
 from goal_conditioned_baselines.chac import config
 from goal_conditioned_baselines.chac.rollout import RolloutWorker
+from mpi4py import MPI
 import os
 import numpy as np
+from goal_conditioned_baselines.utils import mpi_fork, physical_cpu_core_count
 from robot.ant_robot import AntSmallF
 from pathlib import Path
+import sys
 
 
 def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_train_batches, policy_save_interval, save_policies, savepath):
@@ -82,9 +85,30 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
 def make_env(robot, env_config):
     return GCB_Wrapper(MujocoEnvironment(robot, env_config, logger), env_config)
 
-def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = 27, max_ep_length=700, step_size=15):
+def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = 27, max_ep_length=700, step_size=15, num_cpu= 1, bind_core = 0):
     # Make sure the savepath directory exists and make it if not! 
     Path(savepath).mkdir(parents=True, exist_ok=True)
+
+    if num_cpu > 1:
+        # whoami = mpi_fork(num_cpu)
+        n_cpus_available = physical_cpu_core_count()
+        if n_cpus_available < num_cpu:
+            whoami = mpi_fork(num_cpu) # This significantly reduces performance!
+            assert bind_core == 0, "Too high CPU count when trying to bind MPI workers to core. You require {} CPUs but have only {}".format(num_cpu, n_cpus_available)
+        else:
+            if bind_core:
+                whoami = mpi_fork(num_cpu, ['--bind-to', 'core'])
+            else:
+                whoami = mpi_fork(num_cpu)  # This significantly reduces performance!
+            # try:
+            #
+            # except CalledProcessError:
+            #     # fancy version of mpi call failed, try simple version
+            #     whoami = mpi_fork(num_cpu) # This significantly reduces performance!
+        if whoami == 'parent':
+            sys.exit(0)
+        # import goal_conditioned_baselines.tf_util as U
+        # U.single_threaded_session().__enter__()
 
     robot = AntSmallF
 
