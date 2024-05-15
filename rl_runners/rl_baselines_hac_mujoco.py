@@ -139,9 +139,9 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     params['gamma'] = 1.0 - 1.0/params['T']
     params['chac_params'] = dict()
     params['env_name']="AntMujoco"
-    # params['fw_hidden_size'] = '256,256,256'
-    # params['q_hidden_size'] = 256
-    # params['mu_hidden_size'] = 256
+    params['fw_hidden_size'] = '256,256,256'
+    params['q_hidden_size'] = 256
+    params['mu_hidden_size'] = 256
 
     env = make_env(robot, env_config)
     def get_env():
