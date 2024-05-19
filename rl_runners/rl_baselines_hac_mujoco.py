@@ -85,7 +85,7 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
 def make_env(robot, env_config):
     return GCB_Wrapper(MujocoEnvironment(robot, env_config, logger), env_config)
 
-def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = 27, max_ep_length=700, step_size=15, num_cpu= 1, bind_core = 0):
+def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = 27, max_ep_length=700, step_size=15, num_cpu= 1, bind_core = 0, nn_size = 64):
     # Make sure the savepath directory exists and make it if not! 
     Path(savepath).mkdir(parents=True, exist_ok=True)
 
@@ -139,9 +139,9 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     params['gamma'] = 1.0 - 1.0/params['T']
     params['chac_params'] = dict()
     params['env_name']="AntMujoco"
-    params['fw_hidden_size'] = '256,256,256'
-    params['q_hidden_size'] = 256
-    params['mu_hidden_size'] = 256
+    params['fw_hidden_size'] = f'{nn_size},{nn_size},{nn_size}'
+    params['q_hidden_size'] = nn_size
+    params['mu_hidden_size'] = nn_size
 
     env = make_env(robot, env_config)
     def get_env():

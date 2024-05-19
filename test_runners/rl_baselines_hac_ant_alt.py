@@ -16,7 +16,7 @@ def get_env(robot, env_config):
 
 def run_test_hac_ant_mujoco(load_path, time_horizon = 27, max_ep_length=700, step_size=15):
     robot = AntSmallF
-    include_env_in_state = True
+    include_env_in_state = False
 
     env_config = GCBMujocoConfig({
         "dims":{
