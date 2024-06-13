@@ -13,7 +13,13 @@ from goal_conditioned_baselines.utils import mpi_fork, physical_cpu_core_count
 from robot.ant_robot import AntSmallF
 from pathlib import Path
 import sys
+import random
+import string
 
+
+alphabet = string.ascii_lowercase + string.digits
+def generate_short_id():
+    return ''.join(random.choices(alphabet, k=4))
 
 def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_train_batches, policy_save_interval, save_policies, savepath):
     latest_policy_path = os.path.join(savepath, 'policy_latest.pkl')
@@ -87,7 +93,6 @@ def make_env(robot, env_config):
 
 def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = 27, max_ep_length=700, step_size=15, num_cpu= 1, bind_core = 0, nn_size = 64):
     # Make sure the savepath directory exists and make it if not! 
-    Path(savepath).mkdir(parents=True, exist_ok=True)
 
     if num_cpu > 1:
         # whoami = mpi_fork(num_cpu)
@@ -110,6 +115,9 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
         # import goal_conditioned_baselines.tf_util as U
         # U.single_threaded_session().__enter__()
 
+    savepath = savepath + "/" + generate_short_id()
+
+    Path(savepath).mkdir(parents=True, exist_ok=True)
     robot = AntSmallF
 
     include_env_in_state = False
