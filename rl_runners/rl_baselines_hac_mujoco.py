@@ -95,6 +95,8 @@ def make_env(robot, env_config):
 
 def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = 27, max_ep_length=700, step_size=15, num_cpu= 1, bind_core = 0, nn_size = 64):
     # Make sure the savepath directory exists and make it if not! 
+    epoch_count = 0
+    best_achievement = -np.inf
 
     if num_cpu > 1:
         # whoami = mpi_fork(num_cpu)
