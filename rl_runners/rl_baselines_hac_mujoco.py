@@ -16,6 +16,8 @@ import sys
 import random
 import string
 
+epoch_count = 0
+best_achievement = -np.inf
 
 alphabet = string.ascii_lowercase + string.digits
 def generate_short_id():
@@ -26,12 +28,12 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
     best_policy_path = os.path.join(savepath, 'policy_best.pkl')
     periodic_policy_path = os.path.join(savepath, 'policy_{}.pkl')
 
-    best_achievement = -np.inf
 
     success_rates = []
     ending_intensities = []
 
     for epoch in range(n_epochs):
+        epoch_count += 1
         # train
         logger.info("Training epoch {}".format(epoch))
         rollout_worker.clear_history()
@@ -72,7 +74,7 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
         evaluator.save_policy(latest_policy_path)
 
         if policy_save_interval > 0 and epoch % policy_save_interval == 0 and save_policies:
-            policy_path = periodic_policy_path.format(epoch)
+            policy_path = periodic_policy_path.format(epoch_count)
             logger.info('Saving periodic policy to {} ...'.format(policy_path))
             evaluator.save_policy(policy_path)
         
@@ -115,7 +117,7 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
         # import goal_conditioned_baselines.tf_util as U
         # U.single_threaded_session().__enter__()
 
-    savepath = savepath + "/" + generate_short_id()
+    # savepath = savepath + "/" + generate_short_id()
 
     Path(savepath).mkdir(parents=True, exist_ok=True)
     robot = AntSmallF
