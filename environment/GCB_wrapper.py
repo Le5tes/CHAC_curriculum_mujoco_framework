@@ -12,6 +12,7 @@ class GCB_Wrapper(EnvWrapper):
     def __init__(self, env, config):
         self.config = config
         self.wrapped_env = env
+        self.graph = self.visualize = self.wrapped_env.env.render
         self.state_dim = len(env.state_bounds)
         self.goal_bounds = env.state_bounds[config.state_goal_indices]
         self.end_goal_dim = len(self.goal_bounds)

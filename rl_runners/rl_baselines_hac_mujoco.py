@@ -1,43 +1,42 @@
 import json
-from environment.GCB_wrapper import GCB_Wrapper, env_factory
+import multiprocessing as mp
+from environment.GCB_wrapper import GCB_Wrapper
 from config.env_config import DebugLogsConfig, GCBMujocoConfig
-from environment.mujoco_env import MujocoEnvironment
+
 from goal_conditioned_baselines import logger
-from goal_conditioned_baselines.chac.chac_policy import CHACPolicy
 from goal_conditioned_baselines.chac import config
 from goal_conditioned_baselines.chac.rollout import RolloutWorker
-from mpi4py import MPI
 import os
-import numpy as np
-from goal_conditioned_baselines.utils import mpi_fork, physical_cpu_core_count
+from multiprocessing_infra.policy_runner import PolicyProcess
+from multiprocessing_infra.queued_buffer import QueuedBuffer
 from robot.ant_robot import AntSmallF
 from pathlib import Path
-import sys
 import random
 import string
 
-epoch_count = 0
-best_achievement = -np.inf
 
 alphabet = string.ascii_lowercase + string.digits
 def generate_short_id():
     return ''.join(random.choices(alphabet, k=4))
+    
 
-def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_train_batches, policy_save_interval, save_policies, savepath):
+def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_train_batches, policy_save_interval, save_policies, savepath, sub_processes, queued_buffer):
     latest_policy_path = os.path.join(savepath, 'policy_latest.pkl')
     best_policy_path = os.path.join(savepath, 'policy_best.pkl')
     periodic_policy_path = os.path.join(savepath, 'policy_{}.pkl')
 
+    best_achievement = -1
 
     success_rates = []
     ending_intensities = []
 
     for epoch in range(n_epochs):
-        epoch_count += 1
         # train
         logger.info("Training epoch {}".format(epoch))
         rollout_worker.clear_history()
-        policy, time_durations = rollout_worker.generate_rollouts_update(n_episodes, n_train_batches, epoch)
+        
+        policy, time_durations = rollout_worker.generate_parallel_rollouts_update(n_episodes, n_train_batches, sub_processes, queued_buffer) if sub_processes is not None else rollout_worker.generate_rollouts_update(n_episodes, n_train_batches, epoch)
+
         logger.info('Time for epoch {}: {:.2f}. Rollout time: {:.2f}, Training time: {:.2f}'.format(epoch, time_durations[0], time_durations[1], time_durations[2]))
 
         # eval
@@ -74,7 +73,7 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
         evaluator.save_policy(latest_policy_path)
 
         if policy_save_interval > 0 and epoch % policy_save_interval == 0 and save_policies:
-            policy_path = periodic_policy_path.format(epoch_count)
+            policy_path = periodic_policy_path.format(epoch)
             logger.info('Saving periodic policy to {} ...'.format(policy_path))
             evaluator.save_policy(policy_path)
         
@@ -90,36 +89,12 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
                       file.write(json.dumps({"successes":success_rates, "ending_intensities":ending_intensities}))
             break
 
-def make_env(robot, env_config):
-    return GCB_Wrapper(MujocoEnvironment(robot, env_config, logger), env_config)
 
-def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = 27, max_ep_length=700, step_size=15, num_cpu= 1, bind_core = 0, nn_size = 64):
+def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = 27, max_ep_length=700, step_size=15, num_cpu= 1, nn_size = 64):
     # Make sure the savepath directory exists and make it if not! 
-    epoch_count = 0
-    best_achievement = -np.inf
-
-    if num_cpu > 1:
-        # whoami = mpi_fork(num_cpu)
-        n_cpus_available = physical_cpu_core_count()
-        if n_cpus_available < num_cpu:
-            whoami = mpi_fork(num_cpu) # This significantly reduces performance!
-            assert bind_core == 0, "Too high CPU count when trying to bind MPI workers to core. You require {} CPUs but have only {}".format(num_cpu, n_cpus_available)
-        else:
-            if bind_core:
-                whoami = mpi_fork(num_cpu, ['--bind-to', 'core'])
-            else:
-                whoami = mpi_fork(num_cpu)  # This significantly reduces performance!
-            # try:
-            #
-            # except CalledProcessError:
-            #     # fancy version of mpi call failed, try simple version
-            #     whoami = mpi_fork(num_cpu) # This significantly reduces performance!
-        if whoami == 'parent':
-            sys.exit(0)
-        # import goal_conditioned_baselines.tf_util as U
-        # U.single_threaded_session().__enter__()
-
     # savepath = savepath + "/" + generate_short_id()
+    mp.set_start_method('spawn')
+    n_train_batches =  8
 
     Path(savepath).mkdir(parents=True, exist_ok=True)
     robot = AntSmallF
@@ -154,14 +129,38 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     params['fw_hidden_size'] = f'{nn_size},{nn_size},{nn_size}'
     params['q_hidden_size'] = nn_size
     params['mu_hidden_size'] = nn_size
+    params['batch_size'] = 132
+    params['n_pre_episodes']=3
+    params['q_lr']=0.0001
+    params['mu_lr']=0.0001
+    params['fw_lr']=0.0001
 
-    env = make_env(robot, env_config)
+    processes = None
+    queued_buffer = None
+    logger.debug("### starting processes")
+    if num_cpu > 1:
+        queued_buffer = QueuedBuffer(1_000_000,num_cpu - 1)
+        processes = [PolicyProcess(args=(env_config.dims, params,robot, env_config, n_train_batches, queued_buffer)) for _ in range(num_cpu - 1)]
+        for p in processes:
+            logger.debug("calling start")
+            p.start()
+            logger.debug("called start")
+        for p in processes:
+            assert p.wait_for_message() == "ready"
+    logger.debug("### processes started")
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
+    from environment.mujoco_env import MujocoEnvironment # have to import this AFTER setting up multiprocessing (presumably because mujoco uses threading internally)
     def get_env():
-        return env # keep the same env because it keeps track of intensity
+        return GCB_Wrapper(MujocoEnvironment(robot, env_config, logger), env_config)
 
     params['make_env'] = get_env
 
     policy = config.configure_policy(env_config.dims, params, get_env())
+    if queued_buffer is not None:
+        buffers = [layer.replay_buffer for layer in policy.layers]
+        queued_buffer.set_buffers(buffers)
+    
     rollout_params = config.ROLLOUT_PARAMS
     eval_params = config.EVAL_PARAMS
 
@@ -174,6 +173,9 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     eval_params['exploit'] = True
     eval_params['training_rollout_worker'] = rollout_worker
     evaluator = RolloutWorker(get_env, policy, env_config.dims, logger, **eval_params)
-
-    train(rollout_worker, evaluator, num_epochs, 100,100,100,10, True, savepath)
-    logger.info(f"Final intensity reached: {env.wrapped_env.intensity}")
+    logger.debug("### start train")
+    train(rollout_worker, evaluator, num_epochs, 100,10,n_train_batches,10, True, savepath, processes, queued_buffer)
+    if processes is not None:
+        for process in processes:
+            process.stop()
+    logger.info(f"Final intensity reached: {policy.env.wrapped_env.intensity}")

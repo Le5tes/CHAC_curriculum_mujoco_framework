@@ -1,10 +1,15 @@
+
+from collections import OrderedDict
 import numpy as np
 import time
 import sys
 from goal_conditioned_baselines.utils import store_args
 from goal_conditioned_baselines.rollout import Rollout
+from goal_conditioned_baselines import logger
 from tqdm import tqdm
+from copy import deepcopy
 
+from robot.ant_robot import AntSmallF
 
 class RolloutWorker(Rollout):
     @store_args
@@ -19,13 +24,14 @@ class RolloutWorker(Rollout):
         self.time_scales = np.array([int(t) for t in kwargs['time_scales'].split(',')])
         self.eval_data = {}
 
-    def train_policy(self, n_train_rollouts, n_train_batches, epoch_num = None):
+    def train_policy(self, n_train_rollouts, n_train_batches):
         dur_train = 0
         dur_ro = 0
 
         for episode in tqdm(range(n_train_rollouts), file=sys.__stdout__, desc='Train Rollout'):
             ro_start = time.time()
-            success, self.eval_data, train_duration = self.policy.train(self.env, episode, self.eval_data, n_train_batches, epoch_num)
+
+            success, self.eval_data, train_duration = self.policy.train(episode, self.eval_data, n_train_batches)
             dur_train += train_duration
             self.env.wrapped_env.update_successes(success)
             self.success_history.append(1.0 if success else 0.0)
@@ -33,11 +39,79 @@ class RolloutWorker(Rollout):
             dur_ro += time.time() - ro_start - train_duration
 
         return dur_train, dur_ro
+    
+    def train_policy_parallel(self, n_train_rollouts, n_train_batches, policy_processes, queued_buffer):
+
+        def detach(item):
+            return OrderedDict([(key,val.to('cpu')) for key,val in item.items()])
+
+        def propagate_policies():
+            data = [
+                # For using 2 gpus, the state_dict here is on gpu one, we need to find a way to copy it in a way we can transfer to gpu 2
+                [detach(deepcopy(layer.actor.state_dict())), detach(deepcopy(layer.critic.state_dict())), detach(deepcopy(layer.state_predictor.state_dict()))]
+                  for layer in self.policy.layers
+            ]
+
+            for p in policy_processes:
+                p.update_nets(data)
+
+            for p in policy_processes:
+                assert p.wait_for_message() == "nets updated"
+
+        def learn_parallel(episode, queued_buffer, consume=True):
+            if episode >= self.policy.pre_episodes:
+                self.policy.learn(n_train_batches * len(policy_processes))
+            if consume:
+                queued_buffer.consume_from_queue()
+
+        dur_train = 0
+        dur_ro = 0
+
+        for episode in tqdm(range(n_train_rollouts), file=sys.__stdout__, desc='Train Rollout'):
+            ro_start = time.time()
+
+            propagate_policies()
+
+            for p in policy_processes:
+                p.train(episode)
+
+            learn_parallel(episode, queued_buffer)
+
+            results = []
+            for p in policy_processes:
+                results.append(p.wait_for_data())
+
+            successes, evals, train_durations = tuple(zip(*results))
+
+            max_train_duration = max(train_durations)
+
+            dur_train += max_train_duration
+
+            for eval in evals:
+                self.add_eval_data(eval)
+            for success in successes:
+                self.env.wrapped_env.update_successes(success)
+                self.success_history.append(1.0 if success else 0.0)
+            self.n_episodes += 1
+            dur_ro += time.time() - ro_start - max_train_duration
+
+        learn_parallel(self.n_episodes, queued_buffer, consume=False)
+
+        return dur_train, dur_ro
 
     def generate_rollouts_update(self, n_train_rollouts, n_train_batches, epoch_num = None):
         dur_start = time.time()
         self.policy.set_train_mode()
-        dur_train, dur_ro = self.train_policy(n_train_rollouts, n_train_batches, epoch_num)
+        dur_train, dur_ro = self.train_policy(n_train_rollouts, n_train_batches)
+        dur_total = time.time() - dur_start
+        time_durations = (dur_total, dur_ro, dur_train)
+        updated_policy = self.policy
+        return updated_policy, time_durations
+    
+    def generate_parallel_rollouts_update(self, n_train_rollouts, n_train_batches, policy_processes, queued_buffer):
+        dur_start = time.time()
+        self.policy.set_train_mode()
+        dur_train, dur_ro = self.train_policy_parallel(n_train_rollouts, n_train_batches, policy_processes, queued_buffer)
         dur_total = time.time() - dur_start
         time_durations = (dur_total, dur_ro, dur_train)
         updated_policy = self.policy
@@ -46,7 +120,7 @@ class RolloutWorker(Rollout):
     def generate_rollouts(self, return_states=False):
         self.reset_all_rollouts()
         self.policy.set_test_mode()
-        success, self.eval_data, _ = self.policy.train(self.env, self.n_episodes, self.eval_data, None)
+        success, self.eval_data, _ = self.policy.train(self.n_episodes, self.eval_data, None)
         self.success_history.append(1.0 if success else 0.0)
         self.n_episodes += 1
         return self.eval_data
@@ -95,6 +169,13 @@ class RolloutWorker(Rollout):
             logs = new_logs
 
         return logs
+    
+    def add_eval_data(self, eval):
+        for key in eval:
+            if key in self.eval_data:
+                self.eval_data[key] += eval[key]
+            else:
+                self.eval_data[key] = eval[key]
 
     def clear_history(self):
         self.success_history.clear()
