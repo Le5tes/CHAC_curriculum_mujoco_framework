@@ -94,7 +94,7 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     # Make sure the savepath directory exists and make it if not! 
     # savepath = savepath + "/" + generate_short_id()
     mp.set_start_method('spawn')
-    n_train_batches =  8
+    n_train_batches =  32
 
     Path(savepath).mkdir(parents=True, exist_ok=True)
     robot = AntSmallF
@@ -129,7 +129,7 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     params['fw_hidden_size'] = f'{nn_size},{nn_size},{nn_size}'
     params['q_hidden_size'] = nn_size
     params['mu_hidden_size'] = nn_size
-    params['batch_size'] = 132
+    params['batch_size'] = 4096
     params['n_pre_episodes']=3
     params['q_lr']=0.0001
     params['mu_lr']=0.0001
