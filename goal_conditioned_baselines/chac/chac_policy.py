@@ -1,3 +1,5 @@
+from environment.GCB_wrapper import GCB_Wrapper
+from environment.mujoco_env import MujocoEnvironment
 from goal_conditioned_baselines.utils import (store_args)
 from goal_conditioned_baselines.policy import Policy
 import numpy as np
@@ -6,6 +8,8 @@ from goal_conditioned_baselines.chac.utils import prepare_env
 from goal_conditioned_baselines import logger
 import torch
 import time
+
+from robot.ant_robot import AntSmallF
 
 env_to_load = {'env':None}
 def set_env_to_load(value):
@@ -40,6 +44,7 @@ class CHACPolicy(Policy):
         self.current_state = None
         self.steps_taken = 0
         self.total_steps = 0
+        self.env_config = None
 
     def check_goals(self, env):
         """Determine whether or not each layer's goal was achieved. Also, if applicable, return the highest level whose goal was achieved."""
@@ -109,32 +114,32 @@ class CHACPolicy(Policy):
     def top_layer(self):
         return self.layers[self.n_levels -1]
 
-    def train(self, env, episode_num, eval_data, num_updates, epoch_num = None):
+    def train(self, episode_num, eval_data, num_updates, skip_learn = False, queued_buffer = None):
         """Train agent for an episode"""
         # env.set_view(epoch_num is not None and epoch_num % 10 == 0 and episode_num == 50)
 
-        obs = env.reset()
+        obs = self.env.reset()
         self.current_state = obs['observation']
 
         if self.verbose:
             print("Initial State: ", self.current_state[:3])
 
         self.goal_array[self.n_levels - 1] = obs['desired_goal']
-        env.wrapped_env.final_goal = obs['desired_goal']
+        self.env.wrapped_env.final_goal = obs['desired_goal']
 
         if self.verbose:
-            print("Next End Goal: ", env.wrapped_env.final_goal, env.wrapped_env.goal)
+            print("Next End Goal: ", self.env.wrapped_env.final_goal, self.env.wrapped_env.goal)
 
         # Reset step counter
         self.steps_taken = 0
 
         # Train for an episode
         goal_status, eval_data, max_lay_achieved = self.top_layer().\
-            train(self, env, episode_num=episode_num, eval_data=eval_data)
+            train(self, self.env, episode_num=episode_num, eval_data=eval_data, queued_buffer=queued_buffer)
 
         train_duration = 0
         # Update networks if not testing and enough episodes finished
-        if not self.test_mode and episode_num > self.pre_episodes:
+        if not self.test_mode and episode_num > self.pre_episodes and not skip_learn:
             train_start = time.time()
             learn_summaries = self.learn(num_updates)
 
@@ -174,6 +179,8 @@ class CHACPolicy(Policy):
         }
         state['torch'] = {}
 
+        state['env_config'] = self.env_config
+
         # save pytoch model weights
         for layer in self.layers:
             l = str(layer.level)
@@ -181,7 +188,10 @@ class CHACPolicy(Policy):
             state['torch']['critic' + l] = layer.critic.cpu().state_dict()
             if hasattr(layer, 'state_predictor'):
                 state['torch']['fw_model' + l] = layer.state_predictor.cpu().state_dict()
-                state['fw_model' + l + 'err_list'] = layer.state_predictor.err_list
+                # state['fw_model' + l + 'err_list'] = layer.state_predictor.err_list
+                state['fw_model' + l + 'num_errs'] = layer.state_predictor.num_errs
+                state['fw_model' + l + 'min_err'] = layer.state_predictor.min_err
+                state['fw_model' + l + 'max_err'] = layer.state_predictor.max_err
 
             # move back, just in case
             layer.actor.to(self.device)
@@ -192,11 +202,13 @@ class CHACPolicy(Policy):
         return state
 
     def __setstate__(self, state):
+        
         agent_params = state['agent_params']
         env_name = state['info']['env_name']
 
         # state['env'] = prepare_env(env_name, agent_params['time_scales'], state['input_dims'])
-        state['env']= env_to_load['env']
+        # state['env']= env_to_load['env']
+        state['env']= GCB_Wrapper(MujocoEnvironment(AntSmallF, state['env_config'], logger), state['env_config'])
         self.__init__(**state)
         self.env.agent = self
 
@@ -207,6 +219,10 @@ class CHACPolicy(Policy):
             layer.critic.load_state_dict(state['torch']['critic' + l])
             if hasattr(layer, 'state_predictor'):
                 layer.state_predictor.load_state_dict(state['torch']['fw_model' + l])
-                layer.state_predictor.err_list = state['fw_model' + l + 'err_list']
-                layer.state_predictor.min_err = np.min(state['fw_model' + l + 'err_list'])
-                layer.state_predictor.max_err = np.max(state['fw_model' + l + 'err_list'])
+                # layer.state_predictor.err_list = state['fw_model' + l + 'err_list']
+                # layer.state_predictor.min_err = np.min(state['fw_model' + l + 'err_list'])
+                # layer.state_predictor.max_err = np.max(state['fw_model' + l + 'err_list'])
+
+                layer.state_predictor.num_errs = state['fw_model' + l + 'num_errs']
+                layer.state_predictor.min_err = state['fw_model' + l + 'min_err']
+                layer.state_predictor.max_err = state['fw_model' + l + 'max_err']

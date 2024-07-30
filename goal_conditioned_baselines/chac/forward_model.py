@@ -28,7 +28,8 @@ class ForwardModel(Base):
         self.reset()
 
         self.err_list_size = err_list_size
-        self.err_list = []
+        # self.err_list = []
+        self.num_errs = 0
         self.min_err = np.inf
         self.max_err = -np.inf
 
@@ -47,8 +48,8 @@ class ForwardModel(Base):
         errs = (s_next_prediction - s_next)**2
         err = errs.mean(axis=1)
 
-        if len(self.err_list) < self.err_list_size and err.size:
-            self.err_list += err.tolist()
+        if self.num_errs < self.err_list_size and err.size:
+            self.num_errs += len(err.tolist())
             # update bounds for normalization
             # self.min_err = np.min(self.err_list)
             # self.max_err = np.max(self.err_list) ## wtf is this?!?!
