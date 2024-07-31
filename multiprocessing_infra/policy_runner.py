@@ -54,6 +54,7 @@ class PolicyProcess(Process):
         
     def train__(self, ep_number):
         success, eval_data, train_duration = self.policy.train(ep_number, {}, self.n_train_batches, True, self.queued_buffer)
+        self.env.wrapped_env.update_successes(success)
         self.queued_buffer.mark_process_done()
         debug("PP - train done, sending back data")
         self.data_pipe_back.send((success, eval_data, train_duration))

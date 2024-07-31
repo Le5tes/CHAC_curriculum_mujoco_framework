@@ -90,7 +90,6 @@ class RolloutWorker(Rollout):
             for eval in evals:
                 self.add_eval_data(eval)
             for success in successes:
-                self.env.wrapped_env.update_successes(success)
                 self.success_history.append(1.0 if success else 0.0)
             self.n_episodes += 1
             dur_ro += time.time() - ro_start - max_train_duration
@@ -121,6 +120,7 @@ class RolloutWorker(Rollout):
         self.reset_all_rollouts()
         self.policy.set_test_mode()
         success, self.eval_data, _ = self.policy.train(self.n_episodes, self.eval_data, None)
+        self.env.wrapped_env.update_successes(success)
         self.success_history.append(1.0 if success else 0.0)
         self.n_episodes += 1
         return self.eval_data
