@@ -22,10 +22,10 @@ class PolicyProcess(Process):
         from environment.GCB_wrapper import GCB_Wrapper
         from environment.mujoco_env import MujocoEnvironment
         from goal_conditioned_baselines.chac import config
-        env = GCB_Wrapper(MujocoEnvironment(robot, env_config, logger), env_config)
+        self.env = GCB_Wrapper(MujocoEnvironment(robot, env_config, logger), env_config)
         self.queued_buffer = queued_buffer
         self.n_train_batches = n_train_batches
-        self.policy = config.configure_policy(dims, params, env)
+        self.policy = config.configure_policy(dims, params, self.env)
         self.policy.set_train_mode()
 
         self.active = True

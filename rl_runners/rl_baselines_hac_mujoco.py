@@ -174,7 +174,7 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     eval_params['training_rollout_worker'] = rollout_worker
     evaluator = RolloutWorker(get_env, policy, env_config.dims, logger, **eval_params)
     logger.debug("### start train")
-    train(rollout_worker, evaluator, num_epochs, 100,10,n_train_batches,10, True, savepath, processes, queued_buffer)
+    train(rollout_worker, evaluator, num_epochs, 100,100,n_train_batches,10, True, savepath, processes, queued_buffer)
     if processes is not None:
         for process in processes:
             process.stop()
