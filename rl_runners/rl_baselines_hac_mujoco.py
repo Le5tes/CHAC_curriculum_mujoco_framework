@@ -90,7 +90,7 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
             break
 
 
-def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = 27, max_ep_length=700, step_size=15, num_cpu= 1, nn_size = 64):
+def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = (27,27), max_ep_length=700, step_size=15, num_cpu= 1, nn_size = 64):
     # Make sure the savepath directory exists and make it if not! 
     # savepath = savepath + "/" + generate_short_id()
     mp.set_start_method('spawn')
@@ -108,7 +108,7 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
             'g': 2,
         },
         "debug_logs": DebugLogsConfig({"robot": False, "env": False, "sim": False}),
-        "time_scales": f"{time_horizon},{time_horizon}",
+        "time_scales": ','.join(str(i) for i in time_horizon),
         "bounded_terrain": True,
         "fall_on_turn_over": False,
         "render": False,
@@ -122,10 +122,12 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
 
     params = config.DEFAULT_PARAMS
     params['num_threads'] = 1
+    params['time_scales'] = env_config.time_scales
     params['T'] =  env_config.max_episode_length
     params['gamma'] = 1.0 - 1.0/params['T']
     params['chac_params'] = dict()
     params['env_name']="AntMujoco"
+    params['n_levels']= len(time_horizon)
     params['fw_hidden_size'] = f'{nn_size},{nn_size},{nn_size}'
     params['q_hidden_size'] = nn_size
     params['mu_hidden_size'] = nn_size

@@ -36,7 +36,6 @@ DEFAULT_PARAMS = {
     'fw_lr': 0.001,
     'verbose': False,
     'graph': 1,
-    'time_scales': '27,27'
 }
 
 POLICY_ACTION_PARAMS = {}
