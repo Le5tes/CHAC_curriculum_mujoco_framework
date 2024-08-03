@@ -179,8 +179,19 @@ class Rollout:
     def save_policy(self, path):
         """Pickles the current policy for later inspection.
         """
-        with open(path, 'wb') as f:
-            pickle.dump(self.policy, f)
+        saved = False
+        trys = 0
+        while not saved or trys == 3:
+            try:
+                with open(path, 'wb') as f:
+                    pickle.dump(self.policy, f)
+                saved = True
+            except IOError as exc:
+                trys += 1
+                if trys < 3:
+                    print("failed to save - trying again!", exc)
+                else:
+                    print("still failed to save, giving up this time!")
 
     def seed(self, seed):
         """Seeds each environment with a distinct seed derived from the passed in global seed.
