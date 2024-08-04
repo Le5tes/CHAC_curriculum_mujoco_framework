@@ -6,6 +6,7 @@ from config.env_config import DebugLogsConfig, GCBMujocoConfig
 
 from goal_conditioned_baselines import logger
 from goal_conditioned_baselines.chac import config
+from goal_conditioned_baselines.chac.chac_policy import set_env_to_load
 from goal_conditioned_baselines.chac.rollout import RolloutWorker
 import os
 from multiprocessing_infra.policy_runner import PolicyProcess
@@ -23,7 +24,7 @@ def generate_short_id():
 
 def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_train_batches, policy_save_interval, save_policies, savepath, starting_epoch, sub_processes, queued_buffer):
     latest_policy_path = os.path.join(savepath, 'policy_latest.pkl')
-    best_policy_path = os.path.join(savepath, 'policy_best.pkl')
+    best_policy_path = os.path.join(savepath, 'policy_best_{}.pkl')
     periodic_policy_path = os.path.join(savepath, 'policy_{}.pkl')
 
     best_achievement = -1
@@ -77,6 +78,9 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
         # save latest policy
         evaluator.save_policy(latest_policy_path)
 
+        with open(savepath + "/epochs_completed", "w") as file:
+            file.write(f"{epoch}")
+
         if policy_save_interval > 0 and epoch % policy_save_interval == 0 and save_policies:
             policy_path = periodic_policy_path.format(epoch)
             logger.info('Saving periodic policy to {} ...'.format(policy_path))
@@ -84,9 +88,10 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
         
         if achievement >= best_achievement and save_policies:
             best_achievement = achievement
+            policy_path = best_policy_path.format(epoch)
             logger.info(
-                'New best acheivement: {}. Saving policy to {} ...'.format(best_achievement, best_policy_path))
-            evaluator.save_policy(best_policy_path)
+                'New best acheivement: {}. Saving policy to {} ...'.format(best_achievement, policy_path))
+            evaluator.save_policy(policy_path)
 
         epoch += 1
 
@@ -138,7 +143,7 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     params['q_hidden_size'] = nn_size
     params['mu_hidden_size'] = nn_size
     params['batch_size'] = 4096
-    params['n_pre_episodes']=3
+    params['n_pre_episodes']=30
     params['q_lr']=0.0001
     params['mu_lr']=0.0001
     params['fw_lr']=0.0001
@@ -165,11 +170,14 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     params['make_env'] = get_env
 
     if loadpath is not None:
+        set_env_to_load(get_env())
+
         f = open(loadpath, 'rb')
         f.close()
 
         with open(loadpath, 'rb') as policy_file:
             policy = pickle.load(policy_file)
+        
     else:
         policy = config.configure_policy(env_config.dims, params, get_env())
 

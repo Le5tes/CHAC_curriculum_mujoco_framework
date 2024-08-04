@@ -207,8 +207,9 @@ class CHACPolicy(Policy):
         env_name = state['info']['env_name']
 
         # state['env'] = prepare_env(env_name, agent_params['time_scales'], state['input_dims'])
-        # state['env']= env_to_load['env']
-        state['env']= GCB_Wrapper(MujocoEnvironment(AntSmallF, state['env_config'], logger), state['env_config'])
+        state['env']= env_to_load['env']
+        # state['env']= GCB_Wrapper(MujocoEnvironment(AntSmallF, state['env_config'], logger), state['env_config'])
+        # state['env']= None
         self.__init__(**state)
         self.env.agent = self
 
