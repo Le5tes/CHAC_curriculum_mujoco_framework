@@ -1,5 +1,6 @@
 import json
 import multiprocessing as mp
+import pickle
 from environment.GCB_wrapper import GCB_Wrapper
 from config.env_config import DebugLogsConfig, GCBMujocoConfig
 
@@ -20,7 +21,7 @@ def generate_short_id():
     return ''.join(random.choices(alphabet, k=4))
     
 
-def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_train_batches, policy_save_interval, save_policies, savepath, sub_processes, queued_buffer):
+def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_train_batches, policy_save_interval, save_policies, savepath, starting_epoch, sub_processes, queued_buffer):
     latest_policy_path = os.path.join(savepath, 'policy_latest.pkl')
     best_policy_path = os.path.join(savepath, 'policy_best.pkl')
     periodic_policy_path = os.path.join(savepath, 'policy_{}.pkl')
@@ -29,8 +30,9 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
 
     success_rates = []
     ending_intensities = []
+    epoch = starting_epoch
 
-    for epoch in range(n_epochs):
+    while epoch < n_epochs:
         # train
         logger.info("Training epoch {}".format(epoch))
         rollout_worker.clear_history()
@@ -61,6 +63,9 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
         ending_intensities.append(end_intensity)
         achievement = success_rate * end_intensity
 
+        with open(savepath + "/results.csv", "a") as file:
+            file.write(f"{success_rate},{end_intensity},{achievement}\n")
+
         try:
             rollout_worker.policy.draw_hists(img_dir=logger.get_dir())
         except Exception as e:
@@ -82,18 +87,19 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
             logger.info(
                 'New best acheivement: {}. Saving policy to {} ...'.format(best_achievement, best_policy_path))
             evaluator.save_policy(best_policy_path)
-        
-        if (epoch + 1) == n_epochs:
-            logger.info('All epochs are finished. Stopping the training now.')
-            with open(savepath + "results.json", "w") as file:
-                      file.write(json.dumps({"successes":success_rates, "ending_intensities":ending_intensities}))
-            break
+
+        epoch += 1
+
+    logger.info('All epochs are finished. Stopping the training now.')
 
 
-def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = (27,27), max_ep_length=700, step_size=15, num_cpu= 1, nn_size = 64):
+def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = (27,27), max_ep_length=700, step_size=15, num_cpu= 1, nn_size = 64, loadpath = None, epoch_num = 0):
     # Make sure the savepath directory exists and make it if not! 
     # savepath = savepath + "/" + generate_short_id()
-    mp.set_start_method('spawn')
+    try:
+        mp.set_start_method('spawn')
+    except RuntimeError:
+        print("context previously set")
     n_train_batches =  32
 
     Path(savepath).mkdir(parents=True, exist_ok=True)
@@ -158,7 +164,19 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
 
     params['make_env'] = get_env
 
-    policy = config.configure_policy(env_config.dims, params, get_env())
+    if loadpath is not None:
+        f = open(loadpath, 'rb')
+        f.close()
+
+        with open(loadpath, 'rb') as policy_file:
+            policy = pickle.load(policy_file)
+    else:
+        policy = config.configure_policy(env_config.dims, params, get_env())
+
+        ## Set up file for storing results!
+        with open(savepath + "/results.csv", "w") as file:
+            file.write("success_rate,end_intensity,achievement\n")
+
     if queued_buffer is not None:
         buffers = [layer.replay_buffer for layer in policy.layers]
         queued_buffer.set_buffers(buffers)
@@ -176,7 +194,7 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     eval_params['training_rollout_worker'] = rollout_worker
     evaluator = RolloutWorker(get_env, policy, env_config.dims, logger, **eval_params)
     logger.debug("### start train")
-    train(rollout_worker, evaluator, num_epochs, 100,100,n_train_batches,10, True, savepath, processes, queued_buffer)
+    train(rollout_worker, evaluator, num_epochs, 100,100,n_train_batches,10, True, savepath, epoch_num, processes, queued_buffer)
     if processes is not None:
         for process in processes:
             process.stop()
