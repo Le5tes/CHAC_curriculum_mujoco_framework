@@ -5,6 +5,6 @@ from rl_runners.series_run_curriculum_learning_experiment import run_curriculum_
 
 if __name__ == "__main__":
     if sys.argv[2] == "curriculum_experiment":
-        run_curriculum_learn_experiment(sys.argv[1])
+        run_curriculum_learn_experiment(sys.argv[1], True)
     if sys.argv[2] == "hierarchy_experiment":
         run_hierarchical_learning_experiment(sys.argv[1], True)
