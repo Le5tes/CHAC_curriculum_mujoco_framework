@@ -1,6 +1,9 @@
 import json
 import multiprocessing as mp
 import pickle
+import sys
+
+from tqdm import tqdm
 from environment.GCB_wrapper import GCB_Wrapper
 from config.env_config import DebugLogsConfig, GCBMujocoConfig
 
@@ -46,9 +49,10 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
         logger.info("Evaluating epoch {}".format(epoch))
         evaluator.clear_history()
 
-        for _ in range(n_test_rollouts):
+        for _ in tqdm(range(n_test_rollouts), file=sys.__stdout__, desc='Eval Rollout'):
             evaluator.generate_rollouts()
 
+        logger.info("prepping logs")
         # record logs
         logger.record_tabular('epoch', epoch)
         for key, val in evaluator.logs('test'):
