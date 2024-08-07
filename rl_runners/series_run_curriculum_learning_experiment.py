@@ -25,6 +25,8 @@ def run_curriculum_learn_experiment(savepath, continuing = False):
         else:
             run_hac(run_save_path, 50, difficulty, False, num_cpu=10, nn_size = 256)
 
+        current_spec += 1
+
 
     with open(savepath + "/current_spec", "w") as f:
         f.write(f"{len(difficulties)}")

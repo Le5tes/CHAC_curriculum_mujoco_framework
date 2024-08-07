@@ -207,7 +207,13 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     evaluator = RolloutWorker(get_env, policy, env_config.dims, logger, **eval_params)
     logger.debug("### start train")
     train(rollout_worker, evaluator, num_epochs, 100,100,n_train_batches,10, True, savepath, epoch_num, processes, queued_buffer)
+    logger.info(f"Final intensity reached: {policy.env.wrapped_env.intensity}")
+
+    ## cleanup
     if processes is not None:
         for process in processes:
             process.stop()
-    logger.info(f"Final intensity reached: {policy.env.wrapped_env.intensity}")
+    ## these are deleted so if we run it again it doesn't try to include them in the context for the new processes we spin up.
+    del MujocoEnvironment
+    del get_env
+    params['make_env'] = None
