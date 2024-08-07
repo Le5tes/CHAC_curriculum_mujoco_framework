@@ -16,8 +16,11 @@ def run_hierarchical_learning_experiment(savepath, continuing = False):
         run_save_path = f"{savepath}/non-hierachies-{num_levels}"
 
         if continuing:
-            with open(run_save_path+ "/epochs_completed", "r") as f:
-                epochs_completed = int(f.read())
+            try:
+                with open(run_save_path+ "/epochs_completed", "r") as f:
+                    epochs_completed = int(f.read())
+            except FileNotFoundError:
+                epochs_completed = -1
             
             run_hac(run_save_path, 50, 0.0, increasing_difficulty = True, time_horizon=time_horizon, num_cpu=10, nn_size=256, loadpath = run_save_path + "/policy_latest.pkl", epoch_num = epochs_completed + 1)
 
