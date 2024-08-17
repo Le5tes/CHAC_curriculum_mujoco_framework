@@ -141,7 +141,6 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
         "debug_logs": DebugLogsConfig({"robot": False, "env": False, "sim": False}),
         "time_scales": ','.join(str(i) for i in time_horizon),
         "bounded_terrain": True,
-        "fall_on_turn_over": False,
         "render": False,
         "step_size": step_size,
         "start_intensity":float(starting_difficulty),
