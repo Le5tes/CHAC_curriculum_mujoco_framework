@@ -181,7 +181,7 @@ class Rollout:
         """
         saved = False
         trys = 0
-        while not saved or trys == 3:
+        while not saved and trys < 3:
             try:
                 with open(path, 'wb') as f:
                     pickle.dump(self.policy, f)

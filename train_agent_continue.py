@@ -9,4 +9,4 @@ with open(save_path+ "/epochs_completed", "r") as f:
 print("continuing from epoch", epochs_completed + 1)
 
 if __name__ == "__main__":
-   run_hac(save_path,200, num_cpu=10, increasing_difficulty = True, nn_size = 256, loadpath = sys.argv[2], epoch_num = epochs_completed + 1)
+   run_hac(save_path,200, num_cpu=11, increasing_difficulty = True, nn_size = 256, loadpath = sys.argv[2], epoch_num = epochs_completed + 1, include_env_in_state = True)

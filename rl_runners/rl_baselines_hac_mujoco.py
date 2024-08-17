@@ -25,6 +25,21 @@ def generate_short_id():
     return ''.join(random.choices(alphabet, k=4))
     
 
+def save_value(path,writetype, value):
+    saved = False
+    trys = 0
+    while not saved and trys < 3:
+        try:
+            with open(path, writetype) as f:
+                f.write(value)
+            saved = True
+        except IOError as exc:
+            trys += 1
+            if trys < 3:
+                print(f"failed to save value to {path} - trying again!", exc)
+            else:
+                print(f"still failed to save value to {path}, giving up this time!")
+
 def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_train_batches, policy_save_interval, save_policies, savepath, starting_epoch, sub_processes, queued_buffer):
     latest_policy_path = os.path.join(savepath, 'policy_latest.pkl')
     best_policy_path = os.path.join(savepath, 'policy_best_{}.pkl')
@@ -35,6 +50,10 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
     success_rates = []
     ending_intensities = []
     epoch = starting_epoch
+
+    if starting_epoch == 0:
+        policy_path = periodic_policy_path.format(0)
+        evaluator.save_policy(policy_path)
 
     while epoch < n_epochs:
         # train
@@ -68,8 +87,7 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
         ending_intensities.append(end_intensity)
         achievement = success_rate * end_intensity
 
-        with open(savepath + "/results.csv", "a") as file:
-            file.write(f"{success_rate},{end_intensity},{achievement}\n")
+        save_value(savepath + "/results.csv", "a", f"{success_rate},{end_intensity},{achievement}\n")
 
         try:
             rollout_worker.policy.draw_hists(img_dir=logger.get_dir())
@@ -82,11 +100,10 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
         # save latest policy
         evaluator.save_policy(latest_policy_path)
 
-        with open(savepath + "/epochs_completed", "w") as file:
-            file.write(f"{epoch}")
+        save_value(savepath + "/epochs_completed", "w", f"{epoch}")
 
-        if policy_save_interval > 0 and epoch % policy_save_interval == 0 and save_policies:
-            policy_path = periodic_policy_path.format(epoch)
+        if policy_save_interval > 0 and (epoch + 1) % policy_save_interval == 0 and save_policies:
+            policy_path = periodic_policy_path.format(epoch + 1)
             logger.info('Saving periodic policy to {} ...'.format(policy_path))
             evaluator.save_policy(policy_path)
         
@@ -102,7 +119,7 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
     logger.info('All epochs are finished. Stopping the training now.')
 
 
-def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = (27,27), max_ep_length=700, step_size=15, num_cpu= 1, nn_size = 64, loadpath = None, epoch_num = 0):
+def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = (27,27), max_ep_length=700, step_size=15, num_cpu= 1, nn_size = 64, loadpath = None, epoch_num = 0, include_env_in_state = False):
     # Make sure the savepath directory exists and make it if not! 
     # savepath = savepath + "/" + generate_short_id()
     try:
@@ -110,11 +127,10 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     except RuntimeError:
         print("context previously set")
     n_train_batches =  32
+    policy_save_interval = 5
 
     Path(savepath).mkdir(parents=True, exist_ok=True)
     robot = AntSmallF
-
-    include_env_in_state = False
 
     env_config = GCBMujocoConfig({
         "dims":{
@@ -206,7 +222,7 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     eval_params['training_rollout_worker'] = rollout_worker
     evaluator = RolloutWorker(get_env, policy, env_config.dims, logger, **eval_params)
     logger.debug("### start train")
-    train(rollout_worker, evaluator, num_epochs, 100,100,n_train_batches,10, True, savepath, epoch_num, processes, queued_buffer)
+    train(rollout_worker, evaluator, num_epochs, 100,100,n_train_batches,policy_save_interval, True, savepath, epoch_num, processes, queued_buffer)
     logger.info(f"Final intensity reached: {policy.env.wrapped_env.intensity}")
 
     ## cleanup
