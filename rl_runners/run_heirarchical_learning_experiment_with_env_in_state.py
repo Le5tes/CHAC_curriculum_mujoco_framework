@@ -23,10 +23,10 @@ def run_hierarchical_learning_experiment(savepath, continuing = False):
                 continuing = False
 
         if continuing:
-            run_hac(run_save_path, 50, 0.0, increasing_difficulty = True, time_horizon=time_horizon, num_cpu=10, nn_size=256, loadpath = run_save_path + "/policy_latest.pkl", epoch_num = epochs_completed + 1)
+            run_hac(run_save_path, 50, 0.0, increasing_difficulty = True, time_horizon=time_horizon, num_cpu=11, nn_size=256, loadpath = run_save_path + "/policy_latest.pkl", epoch_num = epochs_completed + 1, include_env_in_state = True)
 
             continuing = False
         else:
-            run_hac(run_save_path, 50, 0.0, increasing_difficulty = True, time_horizon=time_horizon, num_cpu=10, nn_size=256)
+            run_hac(run_save_path, 50, 0.0, increasing_difficulty = True, time_horizon=time_horizon, num_cpu=11, nn_size=256, include_env_in_state = True)
 
         current_spec += 1
