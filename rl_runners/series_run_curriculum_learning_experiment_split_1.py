@@ -23,11 +23,11 @@ def run_curriculum_learn_experiment_eis_p1(savepath, continuing = False):
                 continuing = False
         
         if continuing:
-            run_hac(run_save_path, 50, difficulty, False, num_cpu=10, nn_size=256, loadpath = run_save_path + "/policy_latest.pkl", epoch_num = epochs_completed + 1, include_env_in_state = True)
+            run_hac(run_save_path, 50, difficulty, False, num_cpu=11, nn_size=256, loadpath = run_save_path + "/policy_latest.pkl", epoch_num = epochs_completed + 1, include_env_in_state = True)
 
             continuing = False
         else:
-            run_hac(run_save_path, 50, difficulty, False, num_cpu=10, nn_size = 256, include_env_in_state = True)
+            run_hac(run_save_path, 50, difficulty, False, num_cpu=11, nn_size = 256, include_env_in_state = True)
 
         current_spec += 1
 
@@ -45,7 +45,7 @@ def run_curriculum_learn_experiment_eis_p1(savepath, continuing = False):
             continuing = False
         
     if continuing:
-        run_hac(run_save_path, 50, 0.0, True, num_cpu=10, nn_size=256, loadpath = run_save_path + "/policy_latest.pkl", epoch_num = epochs_completed + 1, include_env_in_state = True)
+        run_hac(run_save_path, 50, 0.0, True, num_cpu=11, nn_size=256, loadpath = run_save_path + "/policy_latest.pkl", epoch_num = epochs_completed + 1, include_env_in_state = True)
     
     else:
-        run_hac(run_save_path, 50, 0.0, True, num_cpu=10, nn_size = 256, include_env_in_state = True)
+        run_hac(run_save_path, 50, 0.0, True, num_cpu=11, nn_size = 256, include_env_in_state = True)
