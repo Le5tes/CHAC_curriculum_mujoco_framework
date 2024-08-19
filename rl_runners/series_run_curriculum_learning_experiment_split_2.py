@@ -1,6 +1,6 @@
 from rl_runners.rl_baselines_hac_mujoco import run_hac
 
-def run_curriculum_learn_experiment(savepath, continuing = False):
+def run_curriculum_learn_experiment_eis_p2(savepath, continuing = False):
     # without curriculum learning:
     difficulties = [0.25, 0.3, 0.35, 0.4, 0.45, 0.5]
 

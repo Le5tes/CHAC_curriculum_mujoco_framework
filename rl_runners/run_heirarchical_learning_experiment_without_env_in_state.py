@@ -1,6 +1,6 @@
 from rl_runners.rl_baselines_hac_mujoco import run_hac
 
-def run_hierarchical_learning_experiment(savepath, continuing = False):
+def run_hierarchical_learning_experiment_w_eis(savepath, continuing = False):
     level_specs = [(1, (730,)),(2, (27,27)),(3,(9,9,9)),(4,(5,5,5,6)),(5,(4,4,4,4,3))]
 
     if not continuing:
