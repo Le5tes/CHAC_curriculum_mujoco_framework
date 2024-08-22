@@ -1,5 +1,7 @@
 import sys
 
+from rl_runners.run_curiosity_experiment_with_env_in_state import run_curiosity_experiment_with_eis
+from rl_runners.run_curiosity_experiment_without_env_in_state import run_curiosity_experiment_without_eis
 from rl_runners.run_heirarchical_learning_experiment_with_env_in_state import run_hierarchical_learning_experiment
 from rl_runners.run_heirarchical_learning_experiment_without_env_in_state import run_hierarchical_learning_experiment_w_eis
 from rl_runners.series_run_curriculum_learning_experiment import run_curriculum_learn_experiment
@@ -17,3 +19,7 @@ if __name__ == "__main__":
         run_hierarchical_learning_experiment(sys.argv[1], True)
     if sys.argv[2] == "hierarchy_experiment_w_eis":
         run_hierarchical_learning_experiment_w_eis(sys.argv[1], True)
+    if sys.argv[2] == "curiosity_experiment_with_eis":
+        run_curiosity_experiment_with_eis(sys.argv[1], True)
+    if sys.argv[2] == "curiosity_experiment_without_eis":
+        run_curiosity_experiment_without_eis(sys.argv[1], True)
