@@ -64,7 +64,8 @@ class PolicyProcess(Process):
             actor,critic,predictor = data
             self.policy.layers[i].actor.load_state_dict(actor)
             self.policy.layers[i].critic.load_state_dict(critic)
-            self.policy.layers[i].state_predictor.load_state_dict(predictor)
+            if self.policy.layers[i].fw:
+                self.policy.layers[i].state_predictor.load_state_dict(predictor)
         debug("PP - nets updated")
         self.message_pipe_back.send("nets updated")
 

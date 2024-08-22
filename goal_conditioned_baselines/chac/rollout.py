@@ -48,7 +48,7 @@ class RolloutWorker(Rollout):
         def propagate_policies():
             data = [
                 # For using 2 gpus, the state_dict here is on gpu one, we need to find a way to copy it in a way we can transfer to gpu 2
-                [detach(deepcopy(layer.actor.state_dict())), detach(deepcopy(layer.critic.state_dict())), detach(deepcopy(layer.state_predictor.state_dict()))]
+                [detach(deepcopy(layer.actor.state_dict())), detach(deepcopy(layer.critic.state_dict())), detach(deepcopy(layer.state_predictor.state_dict())) if layer.fw else None] 
                   for layer in self.policy.layers
             ]
 
