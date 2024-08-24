@@ -10,14 +10,14 @@ from goal_conditioned_baselines.chac.rollout import RolloutWorker
 
 from robot.ant_robot import AntSmallF
 
-num_episodes = 20
+num_episodes = 100
 
 def get_env(robot, env_config):
     return GCB_Wrapper(MujocoEnvironment(robot, env_config, logger), env_config)
 
-def run_assess_hac_ant_mujoco(load_path, save_path, time_horizon = 27, max_ep_length=700, step_size=15):
+def run_assess_hac_ant_mujoco(load_path, save_path, time_horizon = 27, max_ep_length=700, step_size=15, include_env_in_state = False):
     robot = AntSmallF
-    include_env_in_state = False
+    
 
     env_config = GCBMujocoConfig({
         "dims":{
@@ -33,7 +33,7 @@ def run_assess_hac_ant_mujoco(load_path, save_path, time_horizon = 27, max_ep_le
         "step_size": step_size,
         "increasing_difficulty": False,
         "include_env_in_state": include_env_in_state,
-        "include_larger_features": False,
+        "include_larger_features": include_env_in_state,
         "max_episode_length": max_ep_length
     })
 
