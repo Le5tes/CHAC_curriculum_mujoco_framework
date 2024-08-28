@@ -19,6 +19,8 @@ from pathlib import Path
 import random
 import string
 
+from robot.anymal_robot import Anymal
+
 
 alphabet = string.ascii_lowercase + string.digits
 def generate_short_id():
@@ -119,7 +121,7 @@ def train(rollout_worker, evaluator,n_epochs, n_test_rollouts, n_episodes, n_tra
     logger.info('All epochs are finished. Stopping the training now.')
 
 
-def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = (27,27), max_ep_length=700, step_size=15, num_cpu= 1, nn_size = 64, loadpath = None, epoch_num = 0, include_env_in_state = False, use_curiosity = True):
+def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_difficulty = False, time_horizon = (27,27), max_ep_length=700, step_size=15, num_cpu= 1, nn_size = 64, loadpath = None, epoch_num = 0, include_env_in_state = False, use_curiosity = True, robot_choice = "ant"):
     # Make sure the savepath directory exists and make it if not! 
     # savepath = savepath + "/" + generate_short_id()
     try:
@@ -130,7 +132,10 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
     policy_save_interval = 5
 
     Path(savepath).mkdir(parents=True, exist_ok=True)
-    robot = AntSmallF
+    if robot_choice == "ant":
+        robot = AntSmallF
+    elif robot_choice == "anymal":
+        robot = Anymal
 
     env_config = GCBMujocoConfig({
         "dims":{
@@ -147,7 +152,8 @@ def run_hac(savepath, num_epochs = 1000, starting_difficulty = 0.0, increasing_d
         "increasing_difficulty": increasing_difficulty,
         "max_episode_length": max_ep_length,
         "include_env_in_state": include_env_in_state,
-        "include_larger_features": include_env_in_state
+        "include_larger_features": include_env_in_state,
+        "larger_feature_difficulty_scaling": 2 if robot_choice == "anymal" else 1
     })
 
     params = config.DEFAULT_PARAMS

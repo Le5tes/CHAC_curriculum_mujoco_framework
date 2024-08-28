@@ -12,9 +12,11 @@ if viewer_installed:
 heightmap_adjustment_factor = 0.1
 
 class MJSimulation:
-    def __init__(self, robot, render = False, include_env_in_state = False, include_larger_features = False):
+    def __init__(self, robot, render = False, include_env_in_state = False, include_larger_features = False, larger_feature_difficulty_scaling = 1):
         if robot == 'ant':
             xml_file_name = "ant-environment.xml"
+        elif robot == "anymal":
+            xml_file_name = "anymal-environment.xml"
         else:
             return print("robot not implemented")
         
@@ -32,6 +34,7 @@ class MJSimulation:
 
         self.include_env_in_state = include_env_in_state
         self.include_larger_features = include_larger_features
+        self.larger_feature_difficulty_scaling = larger_feature_difficulty_scaling
 
     def prepare_viewer(self, render):
         self.viewer = None
@@ -78,7 +81,7 @@ class MJSimulation:
         self.generate_start_and_goal(intensity)
         self.heightmap = (
             hms.choose_terrain if self.include_larger_features else hms.jagged_terrain
-        )(20,max(intensity - 0.1, 0), self.start_pos/2 + 10, self.goal/ 2 + 10).T.ravel() * heightmap_adjustment_factor
+        )(20,max(intensity - 0.1, 0), self.start_pos/2 + 10, self.goal/ 2 + 10, larger_feature_difficulty_scaling = self.larger_feature_difficulty_scaling).T.ravel() * heightmap_adjustment_factor
 
         self.model.hfield_data = self.heightmap
         if self.render:

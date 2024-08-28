@@ -38,5 +38,6 @@ class GCBMujocoConfig(Config):
         "step_size": 1,
         "max_episode_length": 1000,
         "include_larger_features": False,
-        "include_env_in_state": False
+        "include_env_in_state": False,
+        "larger_feature_difficulty_scaling": 1
     }

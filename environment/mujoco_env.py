@@ -5,7 +5,7 @@ import numpy as np
 class MujocoEnvironment:
     def __init__(self, robot, config, logger):
         self.config = config
-        self.env = MJSimulation(robot.name, config.render, config.include_env_in_state, config.include_larger_features)
+        self.env = MJSimulation(robot.name, config.render, config.include_env_in_state, config.include_larger_features, config.larger_feature_difficulty_scaling)
         self.robot = robot
         self.action_bounds = robot.joints_scale
         self.state_bounds = self.get_state_bounds(robot, config.include_env_in_state)
