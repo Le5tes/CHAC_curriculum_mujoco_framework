@@ -19,4 +19,4 @@ Joint("RH_KFE_joint",(-3.14,3.14),1000,2)
 
 anymal_velocity_bounds = np.array([(-3,3),(-3,3),(-3,3),(0,0),(0,0),(0,0)])
 
-Anymal = Robot('anymal', anymal_joints, anymal_velocity_bounds)
+Anymal = Robot('anymal', anymal_joints, anymal_velocity_bounds, use_forces=True)
