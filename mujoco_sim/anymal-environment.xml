@@ -334,17 +334,17 @@
 
   </worldbody>
   <actuator>
-    <position class="affine" joint="LF_HAA" name="LF_HAA"/>
-    <position class="affine" joint="LF_HFE" name="LF_HFE"/>
-    <position class="affine" joint="LF_KFE" name="LF_KFE"/>
-    <position class="affine" joint="RF_HAA" name="RF_HAA"/>
-    <position class="affine" joint="RF_HFE" name="RF_HFE"/>
-    <position class="affine" joint="RF_KFE" name="RF_KFE"/>
-    <position class="affine" joint="LH_HAA" name="LH_HAA"/>
-    <position class="affine" joint="LH_HFE" name="LH_HFE"/>
-    <position class="affine" joint="LH_KFE" name="LH_KFE"/>
-    <position class="affine" joint="RH_HAA" name="RH_HAA"/>
-    <position class="affine" joint="RH_HFE" name="RH_HFE"/>
-    <position class="affine" joint="RH_KFE" name="RH_KFE"/>
+    <motor ctrllimited="true" ctrlrange="-2.0 2.0" joint="LF_HAA" name="LF_HAA"/>
+    <motor ctrllimited="true" ctrlrange="-2.0 2.0" joint="LF_HFE" name="LF_HFE"/>
+    <motor ctrllimited="true" ctrlrange="-2.0 2.0" joint="LF_KFE" name="LF_KFE"/>
+    <motor ctrllimited="true" ctrlrange="-2.0 2.0" joint="RF_HAA" name="RF_HAA"/>
+    <motor ctrllimited="true" ctrlrange="-2.0 2.0" joint="RF_HFE" name="RF_HFE"/>
+    <motor ctrllimited="true" ctrlrange="-2.0 2.0" joint="RF_KFE" name="RF_KFE"/>
+    <motor ctrllimited="true" ctrlrange="-2.0 2.0" joint="LH_HAA" name="LH_HAA"/>
+    <motor ctrllimited="true" ctrlrange="-2.0 2.0" joint="LH_HFE" name="LH_HFE"/>
+    <motor ctrllimited="true" ctrlrange="-2.0 2.0" joint="LH_KFE" name="LH_KFE"/>
+    <motor ctrllimited="true" ctrlrange="-2.0 2.0" joint="RH_HAA" name="RH_HAA"/>
+    <motor ctrllimited="true" ctrlrange="-2.0 2.0" joint="RH_HFE" name="RH_HFE"/>
+    <motor ctrllimited="true" ctrlrange="-2.0 2.0" joint="RH_KFE" name="RH_KFE"/>
   </actuator>
 </mujoco>
