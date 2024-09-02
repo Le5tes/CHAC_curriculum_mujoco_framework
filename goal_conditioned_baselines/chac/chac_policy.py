@@ -188,7 +188,6 @@ class CHACPolicy(Policy):
             state['torch']['critic' + l] = layer.critic.cpu().state_dict()
             if hasattr(layer, 'state_predictor'):
                 state['torch']['fw_model' + l] = layer.state_predictor.cpu().state_dict()
-                # state['fw_model' + l + 'err_list'] = layer.state_predictor.err_list
                 state['fw_model' + l + 'num_errs'] = layer.state_predictor.num_errs
                 state['fw_model' + l + 'min_err'] = layer.state_predictor.min_err
                 state['fw_model' + l + 'max_err'] = layer.state_predictor.max_err
@@ -202,14 +201,9 @@ class CHACPolicy(Policy):
         return state
 
     def __setstate__(self, state):
-        
-        agent_params = state['agent_params']
-        env_name = state['info']['env_name']
 
-        # state['env'] = prepare_env(env_name, agent_params['time_scales'], state['input_dims'])
         state['env']= env_to_load['env']
-        # state['env']= GCB_Wrapper(MujocoEnvironment(AntSmallF, state['env_config'], logger), state['env_config'])
-        # state['env']= None
+
         self.__init__(**state)
         self.env.agent = self
 
@@ -220,9 +214,6 @@ class CHACPolicy(Policy):
             layer.critic.load_state_dict(state['torch']['critic' + l])
             if hasattr(layer, 'state_predictor'):
                 layer.state_predictor.load_state_dict(state['torch']['fw_model' + l])
-                # layer.state_predictor.err_list = state['fw_model' + l + 'err_list']
-                # layer.state_predictor.min_err = np.min(state['fw_model' + l + 'err_list'])
-                # layer.state_predictor.max_err = np.max(state['fw_model' + l + 'err_list'])
 
                 layer.state_predictor.num_errs = state['fw_model' + l + 'num_errs']
                 layer.state_predictor.min_err = state['fw_model' + l + 'min_err']

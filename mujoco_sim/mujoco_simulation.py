@@ -5,7 +5,7 @@ import numpy as np
 import os
 import sys
 # viewer_installed = 'mujoco_viewer' in sys.modules
-viewer_installed = False
+viewer_installed = True
 if viewer_installed:
     from mujoco_viewer import MujocoViewer
 
@@ -42,7 +42,7 @@ class MJSimulation:
         if render:
             if viewer_installed:
                 self.render = True
-                self.viewer = MujocoViewer(self.model, self.data)
+                self.viewer = MujocoViewer(self.model, self.data, hide_menus=False)
             else:
                 print("viewer not installed")
 

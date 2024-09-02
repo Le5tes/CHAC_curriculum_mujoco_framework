@@ -1,3 +1,4 @@
+<!-- Adapted from https://github.com/knowledgetechnologyuhh/goal_conditioned_RL_baselines -->
 <mujoco model="ant">
   <compiler angle="degree" coordinate="local" inertiafromgeom="true"/>
   <option integrator="RK4" timestep="0.02"/>

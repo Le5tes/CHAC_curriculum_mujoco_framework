@@ -8,14 +8,15 @@ from goal_conditioned_baselines.chac.chac_policy import set_env_to_load
 from goal_conditioned_baselines.chac.rollout import RolloutWorker
 
 from robot.ant_robot import AntSmallF
+from robot.anymal_robot import Anymal
 
 num_episodes = 50
 
 def get_env(robot, env_config):
     return GCB_Wrapper(MujocoEnvironment(robot, env_config, logger), env_config)
 
-def run_test_hac_ant_mujoco(load_path, time_horizon = 27, max_ep_length=700, step_size=15):
-    robot = AntSmallF
+def run_test_hac_anymal_mujoco(load_path, time_horizon = 27, max_ep_length=700, step_size=15):
+    robot = Anymal
     include_env_in_state = True
 
     env_config = GCBMujocoConfig({
@@ -31,16 +32,17 @@ def run_test_hac_ant_mujoco(load_path, time_horizon = 27, max_ep_length=700, ste
         "render": True,
         "step_size": step_size,
         "increasing_difficulty": False,
-        "start_intensity": 0.25,
+        "start_intensity": 0.1,
         "include_env_in_state": include_env_in_state,
-        "include_larger_features": True,
+        "include_larger_features": include_env_in_state,
         "num_successes_to_increment": 1,
-        "max_episode_length": max_ep_length
+        "max_episode_length": max_ep_length,
+        "larger_feature_difficulty_scaling": 2
     })
 
 
     params = config.DEFAULT_PARAMS
-    params['env_name'] = 'Ant-mujoco'
+    params['env_name'] = 'Anymal-mujoco'
     params['num_threads'] = 1
     #  params = config.prepare_params(params)
     params['T'] =  max_ep_length

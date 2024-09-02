@@ -1,3 +1,4 @@
+<!-- Sadly I didn't get to the point of training any agents using this. ANYmal model adapted from https://github.com/google-deepmind/mujoco_menagerie -->
 <mujoco model="anymal_c">
   <compiler angle="radian" coordinate="local" inertiafromgeom="true"  meshdir="assets" texturedir="assets" autolimits="true"/>
   <option integrator="RK4" timestep="0.02"/>

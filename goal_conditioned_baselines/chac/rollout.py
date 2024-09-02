@@ -1,3 +1,4 @@
+# The main addition to this file is the train_policy_parallel method which was used to run multiple episodes in parallel processes 
 
 from collections import OrderedDict
 import numpy as np

@@ -313,105 +313,6 @@ class Layer():
             return False
         
 
-    # inverted version - this should be called every time the environment steps
-    def train_2(self, agent, env, new_action, new_state, goal, fallen, episode_num=None, subgoal_test = False, eval_data={} ):
-        # if subgoal_test or np.random.random_sample() < self.subgoal_test_perc:
-        #     next_subgoal_test = True
-        # else:
-        #     next_subgoal_test = False
-        agent.goal_array[self.level] = goal
-        agent.current_state = new_state
-        self.maxed_out = False
-
-        if self.current_state is None or self.current_action is None:
-            self.current_state = new_state
-            self.current_action = new_action
-            self.goal = goal # we should really just pass the goal to choose_action directly, but I'm keeping to how this works
-            if self.level > 0:
-                self.current_action, action_type, self.next_subgoal_test = self.choose_action(agent, env, subgoal_test)
-                return agent.layers[self.level - 1].train_2(agent, env, new_action, new_state, self.current_action, fallen, episode_num, False, eval_data)
-            agent.steps_taken += 1
-            goal_status, max_lay_achieved = agent.check_goals(env)
-            return goal_status, eval_data, max_lay_achieved
-
-        if self.level > 0:
-            lower_layer = agent.layers[self.level - 1]
-
-            # print(self.current_action)
-
-            goal_status, eval_data, max_lay_achieved = lower_layer.train_2(agent, env, new_action, new_state, self.current_action, fallen, episode_num, self.next_subgoal_test, eval_data)
-
-            if not lower_layer.return_to_higher_level(max_lay_achieved, agent, env, lower_layer.attempts_made, fallen):
-                return goal_status, eval_data, max_lay_achieved
-            else:
-                lower_layer.attempts_made = 0
-                self.current_action, action_type, self.next_subgoal_test = self.choose_action(agent, env, subgoal_test)
-                lower_layer.goal = self.current_action
-                # print('level', self.level, 'action', self.current_action)
-
-        else:
-            agent.steps_taken += 1
-            goal_status, max_lay_achieved = agent.check_goals(env)
-
-        # Determine whether to test upcoming subgoal
-
-        train_test_prefix = 'test_{}/'.format(self.level) if agent.test_mode else 'train_{}/'.format(self.level)
-        if self.level > 0:
-            if "{}subgoal_succ".format(train_test_prefix) not in eval_data:
-                eval_data["{}subgoal_succ".format(train_test_prefix)] = []
-            if "{}n_subgoals".format(train_test_prefix) not in eval_data:
-                eval_data["{}n_subgoals".format(train_test_prefix)] = 0
-
-        if "{}q".format(train_test_prefix) not in eval_data:
-            eval_data["{}q".format(train_test_prefix)] = []
-        
-        current_state_tensor = torch.FloatTensor(self.current_state).view(1, -1).to(self.device)
-        goal_tensor = torch.FloatTensor(goal).view(1, -1).to(self.device)
-        action_tensor = torch.FloatTensor(self.current_action).view(1, -1).to(self.device)
-        with torch.no_grad():
-            q_val = self.critic(current_state_tensor, goal_tensor, action_tensor)
-        eval_data["{}q".format(train_test_prefix)] += [q_val[0].item()]
-        
-        # do training
-        self.attempts_made += 1
-
-        if agent.env.graph and self.fw and agent.env.visualize and self.state_predictor.num_errs:
-            agent_state_tensor = torch.FloatTensor(self.current_state).view(1, -1).to(self.device)
-            surprise = self.state_predictor.pred_bonus(action_tensor, current_state_tensor, agent_state_tensor)
-            self.surprise_history += surprise.tolist()
-
-        # Print if goal from current layer has been achieved
-        self.log_goal_acheived(agent, env, episode_num, self.attempts_made, goal_status)
-
-        self.create_hindsight_transactions(self.current_action, goal_status, env, agent, self.next_subgoal_test, episode_num, self.attempts_made)
-
-        # Update state of current layer
-        self.current_state = agent.current_state
-        if self.level == 0:
-            self.current_action = new_action
-
-        if (max_lay_achieved is not None and max_lay_achieved >= self.level) or \
-                env.step_ctr >= env.max_actions or self.attempts_made >= self.time_limit or fallen:
-
-            if agent.verbose and self.level == self.n_levels - 1:
-                print("HL Attempts Made: ", self.attempts_made)
-
-            # If goal was not achieved after max number of attempts, set maxed out flag to true
-            if self.attempts_made >= self.time_limit and not goal_status[
-                    self.level]:
-                self.maxed_out = True
-
-            # If not testing, finish goal replay by filling in missing goal and reward values before returning to
-            # prior level.
-            if not agent.test_mode:
-                if self.level == self.n_levels - 1:
-                    goal_thresholds = env.end_goal_thresholds
-                else:
-                    goal_thresholds = env.sub_goal_thresholds
-
-                self.finalize_goal_replay(goal_thresholds)
-        return goal_status, eval_data, max_lay_achieved
-
     def train(self, agent, env, subgoal_test=False, episode_num=None, eval_data={}, log = False, queued_buffer = None):
         """Learn to achieve goals with actions belonging to appropriate time scale.
         "goal_array" contains the goal states for the current layer and all higher layers"""
@@ -470,8 +371,7 @@ class Layer():
             # If layer is bottom level, execute low-level action
             else:
                 # move to next state
-                # if log:
-                #     print(action)
+
                 agent.current_state = env.execute_action(action)
                 agent.steps_taken += 1
 
@@ -496,9 +396,6 @@ class Layer():
 
             # Update state of current layer
             self.current_state = agent.current_state
-
-            # if log_this:
-            #     print("goal", self.goal, "subgoal", action, "state", self.current_state[:3])
 
             if (max_lay_achieved is not None and max_lay_achieved >= self.level) or \
                     env.step_ctr >= env.max_actions or attempts_made >= self.time_limit:
