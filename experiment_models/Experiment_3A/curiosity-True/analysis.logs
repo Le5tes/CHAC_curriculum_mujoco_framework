@@ -1,0 +1,502 @@
+running build_ext
+building 'mujoco_py.cymj' extension
+creating /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder
+creating /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/temp.linux-x86_64-cpython-38
+creating /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/temp.linux-x86_64-cpython-38/usr
+creating /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/temp.linux-x86_64-cpython-38/usr/local
+creating /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/temp.linux-x86_64-cpython-38/usr/local/lib
+creating /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/temp.linux-x86_64-cpython-38/usr/local/lib/python3.8
+creating /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/temp.linux-x86_64-cpython-38/usr/local/lib/python3.8/dist-packages
+creating /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/temp.linux-x86_64-cpython-38/usr/local/lib/python3.8/dist-packages/mujoco_py
+creating /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/temp.linux-x86_64-cpython-38/usr/local/lib/python3.8/dist-packages/mujoco_py/gl
+x86_64-linux-gnu-gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -g -fwrapv -O2 -fPIC -I/usr/local/lib/python3.8/dist-packages/mujoco_py -I/root/.mujoco/mujoco210/include -I/usr/local/lib/python3.8/dist-packages/numpy/core/include -I/usr/include/python3.8 -c /usr/local/lib/python3.8/dist-packages/mujoco_py/cymj.c -o /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/temp.linux-x86_64-cpython-38/usr/local/lib/python3.8/dist-packages/mujoco_py/cymj.o -fopenmp -w
+x86_64-linux-gnu-gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -g -fwrapv -O2 -fPIC -I/usr/local/lib/python3.8/dist-packages/mujoco_py -I/root/.mujoco/mujoco210/include -I/usr/local/lib/python3.8/dist-packages/numpy/core/include -I/usr/include/python3.8 -c /usr/local/lib/python3.8/dist-packages/mujoco_py/gl/osmesashim.c -o /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/temp.linux-x86_64-cpython-38/usr/local/lib/python3.8/dist-packages/mujoco_py/gl/osmesashim.o -fopenmp -w
+creating /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/lib.linux-x86_64-cpython-38
+creating /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/lib.linux-x86_64-cpython-38/mujoco_py
+x86_64-linux-gnu-gcc -pthread -shared -Wl,-O1 -Wl,-Bsymbolic-functions -Wl,-Bsymbolic-functions -Wl,-z,relro -g -fwrapv -O2 /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/temp.linux-x86_64-cpython-38/usr/local/lib/python3.8/dist-packages/mujoco_py/cymj.o /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/temp.linux-x86_64-cpython-38/usr/local/lib/python3.8/dist-packages/mujoco_py/gl/osmesashim.o -L/root/.mujoco/mujoco210/bin -L/usr/lib -Wl,--enable-new-dtags,-R/root/.mujoco/mujoco210/bin -lmujoco210 -lglewosmesa -lOSMesa -lGL -o /usr/local/lib/python3.8/dist-packages/mujoco_py/generated/_pyxbld_2.1.2.14_38_linuxcpuextensionbuilder/lib.linux-x86_64-cpython-38/mujoco_py/cymj.cpython-38-x86_64-linux-gnu.so -fopenmp
+WARN: config contains unexpected key: fall_on_turn_over
+this will be ignored
+cuda +
+Running on GPU: 0 NVIDIA RTX A4000
+Creating a CHAC agent
+
+Hierarchy Level 0 with time scale 27
+Actor(
+  (fc1): Linear(in_features=33, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=8, bias=True)
+)
+Critic(
+  (fc1): Linear(in_features=41, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=1, bias=True)
+  (mse_loss): MSELoss()
+)
+ForwardModel(
+  (mlp): Sequential(
+    (0): Linear(in_features=37, out_features=256, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=256, out_features=256, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=256, out_features=256, bias=True)
+    (5): ReLU()
+    (6): Linear(in_features=256, out_features=29, bias=True)
+    (7): Identity()
+  )
+  (mse_loss): MSELoss()
+)
+
+Hierarchy Level 1 with time scale 27
+Actor(
+  (fc1): Linear(in_features=31, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=4, bias=True)
+)
+Critic(
+  (fc1): Linear(in_features=35, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=1, bias=True)
+  (mse_loss): MSELoss()
+)
+ForwardModel(
+  (mlp): Sequential(
+    (0): Linear(in_features=33, out_features=256, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=256, out_features=256, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=256, out_features=256, bias=True)
+    (5): ReLU()
+    (6): Linear(in_features=256, out_features=29, bias=True)
+    (7): Identity()
+  )
+  (mse_loss): MSELoss()
+)
+Difficulty: 0.0, Success Rate: 0.09
+Difficulty: 0.05, Success Rate: 0.0
+Difficulty: 0.1, Success Rate: 0.0
+Difficulty: 0.15000000000000002, Success Rate: 0.0
+Difficulty: 0.2, Success Rate: 0.0
+Difficulty: 0.25, Success Rate: 0.0
+Difficulty: 0.3, Success Rate: 0.0
+Difficulty: 0.35, Success Rate: 0.0
+Difficulty: 0.39999999999999997, Success Rate: 0.0
+Difficulty: 0.44999999999999996, Success Rate: 0.0
+Difficulty: 0.49999999999999994, Success Rate: 0.0
+Difficulty: 0.5499999999999999, Success Rate: 0.0
+Difficulty: 0.6, Success Rate: 0.0
+Difficulty: 0.65, Success Rate: 0.0
+Difficulty: 0.7000000000000001, Success Rate: 0.0
+Difficulty: 0.7500000000000001, Success Rate: 0.0
+Difficulty: 0.8000000000000002, Success Rate: 0.0
+Difficulty: 0.8500000000000002, Success Rate: 0.0
+Difficulty: 0.9000000000000002, Success Rate: 0.0
+Difficulty: 0.9500000000000003, Success Rate: 0.0
+WARN: config contains unexpected key: fall_on_turn_over
+this will be ignored
+cuda +
+Running on GPU: 0 NVIDIA RTX A4000
+Creating a CHAC agent
+
+Hierarchy Level 0 with time scale 27
+Actor(
+  (fc1): Linear(in_features=33, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=8, bias=True)
+)
+Critic(
+  (fc1): Linear(in_features=41, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=1, bias=True)
+  (mse_loss): MSELoss()
+)
+ForwardModel(
+  (mlp): Sequential(
+    (0): Linear(in_features=37, out_features=256, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=256, out_features=256, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=256, out_features=256, bias=True)
+    (5): ReLU()
+    (6): Linear(in_features=256, out_features=29, bias=True)
+    (7): Identity()
+  )
+  (mse_loss): MSELoss()
+)
+
+Hierarchy Level 1 with time scale 27
+Actor(
+  (fc1): Linear(in_features=31, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=4, bias=True)
+)
+Critic(
+  (fc1): Linear(in_features=35, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=1, bias=True)
+  (mse_loss): MSELoss()
+)
+ForwardModel(
+  (mlp): Sequential(
+    (0): Linear(in_features=33, out_features=256, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=256, out_features=256, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=256, out_features=256, bias=True)
+    (5): ReLU()
+    (6): Linear(in_features=256, out_features=29, bias=True)
+    (7): Identity()
+  )
+  (mse_loss): MSELoss()
+)
+Difficulty: 0.0, Success Rate: 1.0
+Difficulty: 0.05, Success Rate: 0.93
+Difficulty: 0.1, Success Rate: 0.78
+Difficulty: 0.15000000000000002, Success Rate: 0.8
+Difficulty: 0.2, Success Rate: 0.7
+Difficulty: 0.25, Success Rate: 0.43
+Difficulty: 0.3, Success Rate: 0.24
+Difficulty: 0.35, Success Rate: 0.15
+Difficulty: 0.39999999999999997, Success Rate: 0.01
+Difficulty: 0.44999999999999996, Success Rate: 0.01
+Difficulty: 0.49999999999999994, Success Rate: 0.0
+Difficulty: 0.5499999999999999, Success Rate: 0.0
+Difficulty: 0.6, Success Rate: 0.0
+Difficulty: 0.65, Success Rate: 0.0
+Difficulty: 0.7000000000000001, Success Rate: 0.0
+Difficulty: 0.7500000000000001, Success Rate: 0.0
+Difficulty: 0.8000000000000002, Success Rate: 0.0
+Difficulty: 0.8500000000000002, Success Rate: 0.0
+Difficulty: 0.9000000000000002, Success Rate: 0.0
+Difficulty: 0.9500000000000003, Success Rate: 0.0
+WARN: config contains unexpected key: fall_on_turn_over
+this will be ignored
+cuda +
+Running on GPU: 0 NVIDIA RTX A4000
+Creating a CHAC agent
+
+Hierarchy Level 0 with time scale 27
+Actor(
+  (fc1): Linear(in_features=33, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=8, bias=True)
+)
+Critic(
+  (fc1): Linear(in_features=41, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=1, bias=True)
+  (mse_loss): MSELoss()
+)
+ForwardModel(
+  (mlp): Sequential(
+    (0): Linear(in_features=37, out_features=256, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=256, out_features=256, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=256, out_features=256, bias=True)
+    (5): ReLU()
+    (6): Linear(in_features=256, out_features=29, bias=True)
+    (7): Identity()
+  )
+  (mse_loss): MSELoss()
+)
+
+Hierarchy Level 1 with time scale 27
+Actor(
+  (fc1): Linear(in_features=31, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=4, bias=True)
+)
+Critic(
+  (fc1): Linear(in_features=35, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=1, bias=True)
+  (mse_loss): MSELoss()
+)
+ForwardModel(
+  (mlp): Sequential(
+    (0): Linear(in_features=33, out_features=256, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=256, out_features=256, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=256, out_features=256, bias=True)
+    (5): ReLU()
+    (6): Linear(in_features=256, out_features=29, bias=True)
+    (7): Identity()
+  )
+  (mse_loss): MSELoss()
+)
+Difficulty: 0.0, Success Rate: 0.99
+Difficulty: 0.05, Success Rate: 0.92
+Difficulty: 0.1, Success Rate: 0.84
+Difficulty: 0.15000000000000002, Success Rate: 0.85
+Difficulty: 0.2, Success Rate: 0.77
+Difficulty: 0.25, Success Rate: 0.56
+Difficulty: 0.3, Success Rate: 0.22
+Difficulty: 0.35, Success Rate: 0.08
+Difficulty: 0.39999999999999997, Success Rate: 0.02
+Difficulty: 0.44999999999999996, Success Rate: 0.02
+Difficulty: 0.49999999999999994, Success Rate: 0.01
+Difficulty: 0.5499999999999999, Success Rate: 0.0
+Difficulty: 0.6, Success Rate: 0.0
+Difficulty: 0.65, Success Rate: 0.0
+Difficulty: 0.7000000000000001, Success Rate: 0.0
+Difficulty: 0.7500000000000001, Success Rate: 0.0
+Difficulty: 0.8000000000000002, Success Rate: 0.0
+Difficulty: 0.8500000000000002, Success Rate: 0.0
+Difficulty: 0.9000000000000002, Success Rate: 0.0
+Difficulty: 0.9500000000000003, Success Rate: 0.0
+WARN: config contains unexpected key: fall_on_turn_over
+this will be ignored
+cuda +
+Running on GPU: 0 NVIDIA RTX A4000
+Creating a CHAC agent
+
+Hierarchy Level 0 with time scale 27
+Actor(
+  (fc1): Linear(in_features=33, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=8, bias=True)
+)
+Critic(
+  (fc1): Linear(in_features=41, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=1, bias=True)
+  (mse_loss): MSELoss()
+)
+ForwardModel(
+  (mlp): Sequential(
+    (0): Linear(in_features=37, out_features=256, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=256, out_features=256, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=256, out_features=256, bias=True)
+    (5): ReLU()
+    (6): Linear(in_features=256, out_features=29, bias=True)
+    (7): Identity()
+  )
+  (mse_loss): MSELoss()
+)
+
+Hierarchy Level 1 with time scale 27
+Actor(
+  (fc1): Linear(in_features=31, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=4, bias=True)
+)
+Critic(
+  (fc1): Linear(in_features=35, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=1, bias=True)
+  (mse_loss): MSELoss()
+)
+ForwardModel(
+  (mlp): Sequential(
+    (0): Linear(in_features=33, out_features=256, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=256, out_features=256, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=256, out_features=256, bias=True)
+    (5): ReLU()
+    (6): Linear(in_features=256, out_features=29, bias=True)
+    (7): Identity()
+  )
+  (mse_loss): MSELoss()
+)
+Difficulty: 0.0, Success Rate: 1.0
+Difficulty: 0.05, Success Rate: 0.92
+Difficulty: 0.1, Success Rate: 0.87
+Difficulty: 0.15000000000000002, Success Rate: 0.75
+Difficulty: 0.2, Success Rate: 0.7
+Difficulty: 0.25, Success Rate: 0.49
+Difficulty: 0.3, Success Rate: 0.22
+Difficulty: 0.35, Success Rate: 0.12
+Difficulty: 0.39999999999999997, Success Rate: 0.05
+Difficulty: 0.44999999999999996, Success Rate: 0.0
+Difficulty: 0.49999999999999994, Success Rate: 0.0
+Difficulty: 0.5499999999999999, Success Rate: 0.0
+Difficulty: 0.6, Success Rate: 0.0
+Difficulty: 0.65, Success Rate: 0.0
+Difficulty: 0.7000000000000001, Success Rate: 0.0
+Difficulty: 0.7500000000000001, Success Rate: 0.0
+Difficulty: 0.8000000000000002, Success Rate: 0.0
+Difficulty: 0.8500000000000002, Success Rate: 0.0
+Difficulty: 0.9000000000000002, Success Rate: 0.0
+Difficulty: 0.9500000000000003, Success Rate: 0.0
+WARN: config contains unexpected key: fall_on_turn_over
+this will be ignored
+cuda +
+Running on GPU: 0 NVIDIA RTX A4000
+Creating a CHAC agent
+
+Hierarchy Level 0 with time scale 27
+Actor(
+  (fc1): Linear(in_features=33, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=8, bias=True)
+)
+Critic(
+  (fc1): Linear(in_features=41, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=1, bias=True)
+  (mse_loss): MSELoss()
+)
+ForwardModel(
+  (mlp): Sequential(
+    (0): Linear(in_features=37, out_features=256, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=256, out_features=256, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=256, out_features=256, bias=True)
+    (5): ReLU()
+    (6): Linear(in_features=256, out_features=29, bias=True)
+    (7): Identity()
+  )
+  (mse_loss): MSELoss()
+)
+
+Hierarchy Level 1 with time scale 27
+Actor(
+  (fc1): Linear(in_features=31, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=4, bias=True)
+)
+Critic(
+  (fc1): Linear(in_features=35, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=1, bias=True)
+  (mse_loss): MSELoss()
+)
+ForwardModel(
+  (mlp): Sequential(
+    (0): Linear(in_features=33, out_features=256, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=256, out_features=256, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=256, out_features=256, bias=True)
+    (5): ReLU()
+    (6): Linear(in_features=256, out_features=29, bias=True)
+    (7): Identity()
+  )
+  (mse_loss): MSELoss()
+)
+Difficulty: 0.0, Success Rate: 1.0
+Difficulty: 0.05, Success Rate: 0.9
+Difficulty: 0.1, Success Rate: 0.81
+Difficulty: 0.15000000000000002, Success Rate: 0.84
+Difficulty: 0.2, Success Rate: 0.77
+Difficulty: 0.25, Success Rate: 0.5
+Difficulty: 0.3, Success Rate: 0.29
+Difficulty: 0.35, Success Rate: 0.08
+Difficulty: 0.39999999999999997, Success Rate: 0.05
+Difficulty: 0.44999999999999996, Success Rate: 0.04
+Difficulty: 0.49999999999999994, Success Rate: 0.0
+Difficulty: 0.5499999999999999, Success Rate: 0.0
+Difficulty: 0.6, Success Rate: 0.0
+Difficulty: 0.65, Success Rate: 0.0
+Difficulty: 0.7000000000000001, Success Rate: 0.0
+Difficulty: 0.7500000000000001, Success Rate: 0.0
+Difficulty: 0.8000000000000002, Success Rate: 0.0
+Difficulty: 0.8500000000000002, Success Rate: 0.0
+Difficulty: 0.9000000000000002, Success Rate: 0.0
+Difficulty: 0.9500000000000003, Success Rate: 0.0
+WARN: config contains unexpected key: fall_on_turn_over
+this will be ignored
+cuda +
+Running on GPU: 0 NVIDIA RTX A4000
+Creating a CHAC agent
+
+Hierarchy Level 0 with time scale 27
+Actor(
+  (fc1): Linear(in_features=33, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=8, bias=True)
+)
+Critic(
+  (fc1): Linear(in_features=41, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=1, bias=True)
+  (mse_loss): MSELoss()
+)
+ForwardModel(
+  (mlp): Sequential(
+    (0): Linear(in_features=37, out_features=256, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=256, out_features=256, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=256, out_features=256, bias=True)
+    (5): ReLU()
+    (6): Linear(in_features=256, out_features=29, bias=True)
+    (7): Identity()
+  )
+  (mse_loss): MSELoss()
+)
+
+Hierarchy Level 1 with time scale 27
+Actor(
+  (fc1): Linear(in_features=31, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=4, bias=True)
+)
+Critic(
+  (fc1): Linear(in_features=35, out_features=256, bias=True)
+  (fc2): Linear(in_features=256, out_features=256, bias=True)
+  (fc3): Linear(in_features=256, out_features=256, bias=True)
+  (fc4): Linear(in_features=256, out_features=1, bias=True)
+  (mse_loss): MSELoss()
+)
+ForwardModel(
+  (mlp): Sequential(
+    (0): Linear(in_features=33, out_features=256, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=256, out_features=256, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=256, out_features=256, bias=True)
+    (5): ReLU()
+    (6): Linear(in_features=256, out_features=29, bias=True)
+    (7): Identity()
+  )
+  (mse_loss): MSELoss()
+)
+Difficulty: 0.0, Success Rate: 1.0
+Difficulty: 0.05, Success Rate: 0.93
+Difficulty: 0.1, Success Rate: 0.79
+Difficulty: 0.15000000000000002, Success Rate: 0.75
+Difficulty: 0.2, Success Rate: 0.64
+Difficulty: 0.25, Success Rate: 0.52
+Difficulty: 0.3, Success Rate: 0.19
+Difficulty: 0.35, Success Rate: 0.06
+Difficulty: 0.39999999999999997, Success Rate: 0.02
+Difficulty: 0.44999999999999996, Success Rate: 0.0
+Difficulty: 0.49999999999999994, Success Rate: 0.0
+Difficulty: 0.5499999999999999, Success Rate: 0.0
+Difficulty: 0.6, Success Rate: 0.0
+Difficulty: 0.65, Success Rate: 0.0
+Difficulty: 0.7000000000000001, Success Rate: 0.0
+Difficulty: 0.7500000000000001, Success Rate: 0.0
+Difficulty: 0.8000000000000002, Success Rate: 0.0
+Difficulty: 0.8500000000000002, Success Rate: 0.0
+Difficulty: 0.9000000000000002, Success Rate: 0.0
+Difficulty: 0.9500000000000003, Success Rate: 0.0
