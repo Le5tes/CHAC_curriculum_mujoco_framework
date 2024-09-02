@@ -4,8 +4,8 @@ import training_ground.terrain_generators_heightmaps as hms
 import numpy as np
 import os
 import sys
-# viewer_installed = 'mujoco_viewer' in sys.modules
-viewer_installed = True
+
+viewer_installed = False
 if viewer_installed:
     from mujoco_viewer import MujocoViewer
 
